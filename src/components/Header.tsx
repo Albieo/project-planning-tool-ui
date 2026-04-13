@@ -1,5 +1,4 @@
 import { Link } from '@tanstack/react-router'
-import WorkOSHeader from './workos-user.tsx'
 import ThemeToggle from './ThemeToggle'
 
 export default function Header() {
@@ -45,7 +44,6 @@ export default function Header() {
               />
             </svg>
           </a>
-          <WorkOSHeader />
 
           <ThemeToggle />
         </div>
@@ -64,6 +62,13 @@ export default function Header() {
             activeProps={{ className: 'nav-link is-active' }}
           >
             About
+          </Link>
+          <Link
+            to="/login"
+            className="nav-link"
+            activeProps={{ className: 'nav-link is-active' }}
+          >
+            Login
           </Link>
           <a
             href="https://tanstack.com/start/latest/docs/framework/react/overview"
