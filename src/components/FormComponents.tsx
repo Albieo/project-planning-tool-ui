@@ -1,6 +1,4 @@
-import { useStore } from '@tanstack/react-form'
-
-import { useFieldContext, useFormContext } from '#/hooks/demo.form-context'
+import { useFormContext } from '#/hooks/form-context'
 
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
@@ -9,6 +7,8 @@ import * as ShadcnSelect from '#/components/ui/select'
 import { Slider as ShadcnSlider } from '#/components/ui/slider'
 import { Switch as ShadcnSwitch } from '#/components/ui/switch'
 import { Label } from '#/components/ui/label'
+import type { ReactElement } from 'react'
+import { useFieldMeta } from '#/hooks/form'
 
 export function SubscribeButton({ label }: { label: string }) {
   const form = useFormContext()
@@ -25,20 +25,19 @@ export function SubscribeButton({ label }: { label: string }) {
 
 function ErrorMessages({
   errors,
+  id,
 }: {
   errors: Array<string | { message: string }>
+  id: string
 }) {
   return (
-    <>
+    <div id={id} className="mt-1 space-y-1 text-sm font-medium text-red-500">
       {errors.map((error) => (
-        <div
-          key={typeof error === 'string' ? error : error.message}
-          className="text-red-500 mt-1 font-bold"
-        >
+        <div key={typeof error === 'string' ? error : error.message}>
           {typeof error === 'string' ? error : error.message}
         </div>
       ))}
-    </>
+    </div>
   )
 }
 
@@ -46,27 +45,47 @@ export function TextField({
   label,
   placeholder,
   type,
+  forgotPassword,
 }: {
   label: string
   placeholder?: string
-  type?: 'text' | 'password'
+  type?: 'text' | 'password' | 'email'
+  forgotPassword?: ReactElement
 }) {
-  const field = useFieldContext<string>()
-  const errors = useStore(field.store, (state) => state.meta.errors)
+  const { field, errors, hasError, errorId } = useFieldMeta<string>()
 
   return (
     <div>
-      <Label htmlFor={label} className="mb-2 text-xl font-bold">
-        {label}
-      </Label>
+      <div className="mb-2 flex items-center justify-between">
+        <Label
+          htmlFor={field.name}
+          className={`text-xl font-bold ${hasError ? 'text-red-500' : ''}`}
+        >
+          {label}
+        </Label>
+
+        {forgotPassword && <div className="text-sm">{forgotPassword}</div>}
+      </div>
+
       <Input
+        id={field.name}
         type={type}
         value={field.state.value}
         placeholder={placeholder}
         onBlur={field.handleBlur}
         onChange={(e) => field.handleChange(e.target.value)}
+        aria-invalid={hasError}
+        aria-describedby={hasError ? errorId : undefined}
+        className={`
+          ${hasError ? 'border-red-500 focus:ring-red-500' : ''}
+        `}
       />
-      {field.state.meta.isTouched && <ErrorMessages errors={errors} />}
+
+      {hasError && (
+        <div id={errorId}>
+          <ErrorMessages id={errorId} errors={errors} />
+        </div>
+      )}
     </div>
   )
 }
@@ -78,22 +97,27 @@ export function TextArea({
   label: string
   rows?: number
 }) {
-  const field = useFieldContext<string>()
-  const errors = useStore(field.store, (state) => state.meta.errors)
+  const { field, errors, hasError, errorId } = useFieldMeta<string>()
 
   return (
     <div>
-      <Label htmlFor={label} className="mb-2 text-xl font-bold">
+      <Label
+        htmlFor={label}
+        className={`mb-2 text-xl font-bold ${hasError ? 'text-red-500' : ''}`}
+      >
         {label}
       </Label>
       <ShadcnTextarea
+        className={hasError ? 'border-red-500 focus:ring-red-500' : ''}
         id={label}
         value={field.state.value}
         onBlur={field.handleBlur}
         rows={rows}
         onChange={(e) => field.handleChange(e.target.value)}
       />
-      {field.state.meta.isTouched && <ErrorMessages errors={errors} />}
+      {field.state.meta.isTouched && (
+        <ErrorMessages id={errorId} errors={errors} />
+      )}
     </div>
   )
 }
@@ -107,8 +131,7 @@ export function Select({
   values: Array<{ label: string; value: string }>
   placeholder?: string
 }) {
-  const field = useFieldContext<string>()
-  const errors = useStore(field.store, (state) => state.meta.errors)
+  const { field, errors, hasError, errorId } = useFieldMeta<string>()
 
   return (
     <div>
@@ -117,7 +140,12 @@ export function Select({
         value={field.state.value}
         onValueChange={(value) => field.handleChange(value)}
       >
-        <ShadcnSelect.SelectTrigger className="w-full">
+        <ShadcnSelect.SelectTrigger
+          className={`w-full ${
+            hasError ? 'border-red-500 focus:ring-red-500' : ''
+          }`}
+          aria-invalid={hasError}
+        >
           <ShadcnSelect.SelectValue placeholder={placeholder} />
         </ShadcnSelect.SelectTrigger>
         <ShadcnSelect.SelectContent className="bg-background text-foreground">
@@ -135,47 +163,60 @@ export function Select({
           </ShadcnSelect.SelectGroup>
         </ShadcnSelect.SelectContent>
       </ShadcnSelect.Select>
-      {field.state.meta.isTouched && <ErrorMessages errors={errors} />}
+      {field.state.meta.isTouched && (
+        <ErrorMessages id={errorId} errors={errors} />
+      )}
     </div>
   )
 }
 
 export function Slider({ label }: { label: string }) {
-  const field = useFieldContext<number>()
-  const errors = useStore(field.store, (state) => state.meta.errors)
+  const { field, errors, hasError, errorId } = useFieldMeta<number>()
 
   return (
     <div>
-      <Label htmlFor={label} className="mb-2 text-xl font-bold">
+      <Label
+        htmlFor={label}
+        className={`mb-2 text-xl font-bold ${hasError ? 'text-red-500' : ''}`}
+      >
         {label}
       </Label>
       <ShadcnSlider
         id={label}
+        className={
+          hasError
+            ? '[&_[role=slider]]:ring-2 [&_[role=slider]]:ring-red-500'
+            : ''
+        }
         onBlur={field.handleBlur}
         value={[field.state.value]}
         onValueChange={(value) => field.handleChange(value[0])}
       />
-      {field.state.meta.isTouched && <ErrorMessages errors={errors} />}
+      {field.state.meta.isTouched && (
+        <ErrorMessages id={errorId} errors={errors} />
+      )}
     </div>
   )
 }
 
 export function Switch({ label }: { label: string }) {
-  const field = useFieldContext<boolean>()
-  const errors = useStore(field.store, (state) => state.meta.errors)
+  const { field, errors, hasError, errorId } = useFieldMeta<boolean>()
 
   return (
     <div>
       <div className="flex items-center gap-2">
         <ShadcnSwitch
           id={label}
+          className={hasError ? 'data-[state=checked]:bg-red-500' : ''}
           onBlur={field.handleBlur}
           checked={field.state.value}
           onCheckedChange={(checked) => field.handleChange(checked)}
         />
         <Label htmlFor={label}>{label}</Label>
       </div>
-      {field.state.meta.isTouched && <ErrorMessages errors={errors} />}
+      {field.state.meta.isTouched && (
+        <ErrorMessages id={errorId} errors={errors} />
+      )}
     </div>
   )
 }

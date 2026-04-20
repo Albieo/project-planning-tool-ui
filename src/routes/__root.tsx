@@ -2,16 +2,16 @@ import {
   HeadContent,
   Scripts,
   createRootRouteWithContext,
+  useLocation,
 } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
+import Header from '#/components/Header'
 import Footer from '../components/Footer'
-import Header from '../components/Header'
 
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 
 import PostHogProvider from '../integrations/posthog/provider'
-
 
 import appCss from '../styles.css?url'
 
@@ -50,6 +50,14 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const location = useLocation()
+  let token = false
+
+  if (location.pathname === '/login' || location.pathname === '/register') {
+    token = false
+  } else {
+    token = true
+  }
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -58,9 +66,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body className="font-sans antialiased [overflow-wrap:anywhere] selection:bg-[rgba(79,184,178,0.24)]">
         <PostHogProvider>
-          <Header />
+          {token && <Header />}
           {children}
-          <Footer />
+          {token && <Footer />}
           <TanStackDevtools
             config={{
               position: 'bottom-right',
