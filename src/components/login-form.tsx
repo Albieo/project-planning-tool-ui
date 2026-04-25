@@ -10,7 +10,13 @@ import { Field, FieldDescription, FieldGroup } from '#/components/ui/field'
 import { useAppForm } from '#/hooks/form'
 import { loginSchema } from '#/schemas/auth'
 
-export function LoginForm() {
+type LoginFormProps = {
+  onSubmit: (data: { email: string; password: string }) => Promise<void>
+  isLoading?: boolean
+  error?: string
+}
+
+export function LoginForm({ onSubmit, error, isLoading }: LoginFormProps) {
   const form = useAppForm({
     defaultValues: {
       email: '',
@@ -20,7 +26,7 @@ export function LoginForm() {
       onChange: loginSchema,
     },
     onSubmit: async ({ value }) => {
-      console.log('Login submitted:', value)
+      await onSubmit(value)
     },
   })
 
@@ -32,8 +38,14 @@ export function LoginForm() {
           Enter your email below to login to your account
         </CardDescription>
       </CardHeader>
+
       <CardContent>
-        <form>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            form.handleSubmit()
+          }}
+        >
           <FieldGroup>
             <Field>
               <form.AppField
@@ -47,6 +59,7 @@ export function LoginForm() {
                 )}
               />
             </Field>
+
             <Field>
               <form.AppField
                 name="password"
@@ -55,11 +68,9 @@ export function LoginForm() {
                     label="Password"
                     type="password"
                     placeholder="••••••••"
+                    autoComplete="current-password"
                     forgotPassword={
-                      <a
-                        href="#"
-                        className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                      >
+                      <a className="ml-auto inline-block text-sm underline-offset-4 hover:underline">
                         Forgot your password?
                       </a>
                     }
@@ -67,10 +78,20 @@ export function LoginForm() {
                 )}
               />
             </Field>
+
             <Field>
               <form.AppForm>
-                <form.SubscribeButton label="Login" />
+                <form.SubscribeButton
+                  label={isLoading ? 'Logging in...' : 'Login'}
+                />
               </form.AppForm>
+
+              {error && (
+                <FieldDescription className="text-center">
+                  {error}
+                </FieldDescription>
+              )}
+
               <FieldDescription className="text-center">
                 Don&apos;t have an account? <Link to="/register">Sign up</Link>
               </FieldDescription>

@@ -9,8 +9,25 @@ import {
 import { Field, FieldDescription, FieldGroup } from '#/components/ui/field'
 import { useAppForm } from '#/hooks/form'
 import { registerSchema } from '#/schemas/auth'
+import type { ComponentProps } from 'react'
 
-export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
+type SignupFormProps = ComponentProps<typeof Card> & {
+  onSubmit: (data: { 
+    name: string
+    email: string
+    password: string
+    confirmPassword: string 
+  }) => Promise<void>
+  isLoading?: boolean
+  error?: string
+}
+
+export function SignupForm({ 
+  onSubmit, 
+  isLoading, 
+  error,
+  ...props 
+}: SignupFormProps) {
   const form = useAppForm({
     defaultValues: {
       name: '',
@@ -22,7 +39,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
       onChange: registerSchema,
     },
     onSubmit: async ({ value }) => {
-      console.log('Signup submitted:', value)
+      await onSubmit(value)
     },
   })
 
@@ -35,7 +52,12 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            form.handleSubmit()
+          }}
+        >
           <FieldGroup>
             <Field>
               <form.AppField
@@ -49,7 +71,11 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
               <form.AppField
                 name="email"
                 children={(field) => (
-                  <field.TextField label="Email" placeholder="m@example.com" />
+                  <field.TextField 
+                    label="Email" 
+                    type="email"
+                    placeholder="m@example.com" 
+                  />
                 )}
               />
               <FieldDescription>
@@ -65,6 +91,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                     label="Password"
                     type="password"
                     placeholder="••••••••"
+                    autoComplete="new-password"
                   />
                 )}
               />
@@ -80,6 +107,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                     label="Confirm Password"
                     type="password"
                     placeholder="••••••••"
+                    autoComplete="new-password"
                   />
                 )}
               />
@@ -87,10 +115,19 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                 Must match the password above.
               </FieldDescription>
             </Field>
+            
+            {error && (
+              <FieldDescription className="text-center text-red-500 font-medium">
+                {error}
+              </FieldDescription>
+            )}
+            
             <FieldGroup>
               <Field>
                 <form.AppForm>
-                  <form.SubscribeButton label="Create Account" />
+                  <form.SubscribeButton 
+                    label={isLoading ? 'Creating Account...' : 'Create Account'} 
+                  />
                 </form.AppForm>
                 <FieldDescription className="px-6 text-center">
                   Already have an account? <Link to="/login">Sign in</Link>

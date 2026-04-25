@@ -12,11 +12,12 @@ import { useFieldMeta } from '#/hooks/form'
 
 export function SubscribeButton({ label }: { label: string }) {
   const form = useFormContext()
+
   return (
     <form.Subscribe selector={(state) => state.isSubmitting}>
       {(isSubmitting) => (
         <Button type="submit" disabled={isSubmitting}>
-          {label}
+          {isSubmitting ? 'Loading...' : label}
         </Button>
       )}
     </form.Subscribe>
@@ -46,9 +47,11 @@ export function TextField({
   placeholder,
   type,
   forgotPassword,
+  autoComplete,
 }: {
   label: string
   placeholder?: string
+  autoComplete?: string
   type?: 'text' | 'password' | 'email'
   forgotPassword?: ReactElement
 }) {
@@ -76,6 +79,7 @@ export function TextField({
         onChange={(e) => field.handleChange(e.target.value)}
         aria-invalid={hasError}
         aria-describedby={hasError ? errorId : undefined}
+        autoComplete={autoComplete}
         className={`
           ${hasError ? 'border-red-500 focus:ring-red-500' : ''}
         `}

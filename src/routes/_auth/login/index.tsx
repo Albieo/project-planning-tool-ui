@@ -1,10 +1,21 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { LoginForm } from '#/components/login-form'
+import { createFileRoute, redirect } from '@tanstack/react-router'
+import { LoginContainer } from '#/components/containers/login.container'
+import { isAuthenticated } from '#/api/auth/isAuthenticated'
 
 export const Route = createFileRoute('/_auth/login/')({
   component: Login,
+  beforeLoad: async () => {
+    try {
+      const result = await isAuthenticated()
+
+      if (result) throw redirect({ to: '/dashboard' })
+
+    } catch (error) {
+      console.error('💥 Error in beforeLoad:', error)
+    }
+  },
 })
 
 function Login() {
-  return <LoginForm />
+  return <LoginContainer />
 }
