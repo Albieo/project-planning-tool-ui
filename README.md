@@ -1,4 +1,4 @@
-Welcome to your new TanStack Start app! 
+Welcome to your new TanStack Start app!
 
 # Getting Started
 
@@ -40,7 +40,6 @@ If you prefer not to use Tailwind CSS:
 
 ## Linting & Formatting
 
-
 This project uses [eslint](https://eslint.org/) and [prettier](https://prettier.io/) for linting and formatting. Eslint is configured using [tanstack/eslint-config](https://tanstack.com/config/latest/docs/eslint). The following scripts are available:
 
 ```bash
@@ -49,7 +48,6 @@ pnpm format
 pnpm check
 ```
 
-
 ## Shadcn
 
 Add components using the latest version of [Shadcn](https://ui.shadcn.com/).
@@ -57,7 +55,6 @@ Add components using the latest version of [Shadcn](https://ui.shadcn.com/).
 ```bash
 pnpm dlx shadcn@latest add button
 ```
-
 
 # Apollo Client Integration
 
@@ -210,7 +207,6 @@ The integration automatically handles:
 
 Visit `/demo/apollo-client` in your application to see a working example of Apollo Client integration.
 
-
 ## T3Env
 
 - You can use T3Env to add type safety to your environment variables.
@@ -220,14 +216,10 @@ Visit `/demo/apollo-client` in your application to see a working example of Apol
 ### Usage
 
 ```ts
-import { env } from "#/env";
+import { env } from '#/env'
 
-console.log(env.VITE_APP_TITLE);
+console.log(env.VITE_APP_TITLE)
 ```
-
-
-
-
 
 ## Setting up PostHog
 
@@ -239,12 +231,9 @@ console.log(env.VITE_APP_TITLE);
 
 - `VITE_POSTHOG_HOST` - Set this if you're using PostHog Cloud EU (`https://eu.i.posthog.com`) or self-hosting
 
-
 ## Setting up WorkOS
 
 - Set the `VITE_WORKOS_CLIENT_ID` in your `.env.local`.
-
-
 
 ## Routing
 
@@ -263,7 +252,7 @@ Now that you have two routes you can use a `Link` component to navigate between 
 To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
 
 ```tsx
-import { Link } from "@tanstack/react-router";
+import { Link } from '@tanstack/react-router'
 ```
 
 Then anywhere in your JSX you can use it like so:
@@ -331,11 +320,11 @@ const getServerTime = createServerFn({
 // Use in a component
 function MyComponent() {
   const [time, setTime] = useState('')
-  
+
   useEffect(() => {
     getServerTime().then(setTime)
   }, [])
-  
+
   return <div>Server time: {time}</div>
 }
 ```
