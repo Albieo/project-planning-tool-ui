@@ -13,7 +13,7 @@ export function getRouter() {
     context,
     scrollRestoration: true,
     defaultPreload: 'intent',
-    defaultPreloadStaleTime: 0,
+    defaultPreloadStaleTime: 30 * 1000,
     defaultNotFoundComponent: NotFoundPage,
   })
 

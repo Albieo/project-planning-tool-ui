@@ -1,44 +1,45 @@
-import { createServerFn } from '@tanstack/react-start'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
+import { toast } from 'sonner'
 import { loginSchema } from '#/schemas/auth'
+import { api } from '#/api/http'
+import type { LoginPayload } from '#/lib/interfaces/login-payload.interface'
 
-const BACKEND_URL = import.meta.env.BACKEND_URL || 'http://localhost:4000'
+async function loginRequest(data: LoginPayload) {
+  const parsed = loginSchema.parse(data)
+  const res = await api.post('/auth/login', parsed)
 
-export const login = createServerFn({
-  method: 'POST',
-}).handler(async (ctx) => {
-  const data = loginSchema.parse(ctx.data)
-
-  const res = await fetch(`${BACKEND_URL}/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  })
-
-  if (!res.ok) {
-    if (res.status === 401) {
-      return new Response('Invalid email or password', { status: 401 })
-    }
-    const message = await res.text()
-    return new Response(message || 'Login failed', { status: res.status })
+  if (res.status !== 200) {
+    throw new Error(res.data?.message || 'Login failed')
   }
 
-  const { accessToken, email, role } = await res.json()
+  return res.data
+}
 
-  const isProd = import.meta.env.NODE_ENV === 'production'
-  const cookieOptions = [
-    `token=${accessToken}`,
-    'Path=/',
-    'HttpOnly',
-    'SameSite=Lax',
-    isProd ? 'Secure' : '',
-    'Max-Age=86400',
-  ].filter(Boolean).join('; ')
+export const useLogin = () => {
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
-  return new Response(JSON.stringify({ email, role }), {
-    status: 200,
-    headers: {
-      'Content-Type': 'application/json',
-      'Set-Cookie': cookieOptions,
+  return useMutation({
+    mutationFn: loginRequest,
+
+    onSuccess: () => {
+      queryClient.setQueryData(['auth'], {
+        authenticated: true,
+      })
+      queryClient.invalidateQueries({ queryKey: ['auth', 'profile'] })
+
+      navigate({ to: '/dashboard', replace: true })
+
+      toast.success('Login successful', {
+        position: 'bottom-right',
+      })
+    },
+
+    onError: (error) => {
+      toast.error(error.message, {
+        position: 'bottom-right',
+      })
     },
   })
-})
+}

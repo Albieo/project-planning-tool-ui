@@ -1,53 +1,61 @@
-import { createServerFn } from '@tanstack/react-start'
 import { registerSchema } from '#/schemas/auth'
+import { api } from '#/api/http'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
+import { toast } from 'sonner'
+import type { RegisterPayload } from '#/lib/interfaces/register-payload.interface'
 
-const BACKEND_URL = import.meta.env.BACKEND_URL || 'http://localhost:4000'
-
-export const register = createServerFn({
-  method: 'POST',
-}).handler(async (ctx) => {
-  const data = registerSchema.parse(ctx.data)
-
+async function registerRequest(data: RegisterPayload) {
+  const parsed = registerSchema.parse(data)
   const backendData = {
-    email: data.email,
-    password: data.password,
+    name: parsed.name,
+    username: parsed.username,
+    email: parsed.email,
+    password: parsed.password,
   }
 
-  const res = await fetch(`${BACKEND_URL}/auth/register`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(backendData),
-  })
+  const res = await api.post('/auth/register', backendData)
 
-  if (!res.ok) {
-    if (res.status === 409) {
-      return new Response('User with this email already exists', { status: 409 })
-    }
-    if (res.status === 400) {
-      const message = await res.text()
-      return new Response(message || 'Invalid registration data', { status: 400 })
-    }
-    const message = await res.text()
-    return new Response(message || 'Registration failed', { status: res.status })
+  if (res.status === 409) {
+    throw new Error('User with this email or username already exists')
   }
 
-  const { accessToken, email, role } = await res.json()
+  if (res.status !== 200) {
+    const message =
+      typeof res.data === 'string'
+        ? res.data
+        : res.data?.message || 'Invalid registration data'
 
-  const isProd = import.meta.env.NODE_ENV === 'production'
-  const cookieOptions = [
-    `token=${accessToken}`,
-    'Path=/',
-    'HttpOnly',
-    'SameSite=Lax',
-    isProd ? 'Secure' : '',
-    'Max-Age=86400',
-  ].filter(Boolean).join('; ')
+    throw new Error(message)
+  }
 
-  return new Response(JSON.stringify({ email, role }), {
-    status: 200,
-    headers: {
-      'Content-Type': 'application/json',
-      'Set-Cookie': cookieOptions,
+  return res.data
+}
+
+export const useRegister = () => {
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: registerRequest,
+
+    onSuccess: () => {
+      queryClient.setQueryData(['auth'], {
+        authenticated: true,
+      })
+      queryClient.invalidateQueries({ queryKey: ['auth', 'profile'] })
+
+      navigate({ to: '/dashboard', replace: true })
+
+      toast.success('Registration successful', {
+        position: 'bottom-right',
+      })
+    },
+
+    onError: (error) => {
+      toast.error(error.message, {
+        position: 'bottom-right',
+      })
     },
   })
-})
+}

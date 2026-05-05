@@ -2,21 +2,17 @@ import {
   HeadContent,
   Scripts,
   createRootRouteWithContext,
-  useLocation,
 } from '@tanstack/react-router'
+
+import { Toaster } from '#/components/ui/sonner'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
-import Header from '#/components/Header'
-import Footer from '../components/Footer'
-
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
-
 import PostHogProvider from '../integrations/posthog/provider'
 
 import appCss from '../styles.css?url'
 
 import type { ApolloClientIntegration } from '@apollo/client-integration-tanstack-start'
-
 import type { QueryClient } from '@tanstack/react-query'
 
 interface MyRouterContext extends ApolloClientIntegration.RouterContext {
@@ -28,51 +24,30 @@ const THEME_INIT_SCRIPT = `(function(){try{var stored=window.localStorage.getIte
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   head: () => ({
     meta: [
-      {
-        charSet: 'utf-8',
-      },
-      {
-        name: 'viewport',
-        content: 'width=device-width, initial-scale=1',
-      },
-      {
-        title: 'TanStack Start Starter',
-      },
+      { charSet: 'utf-8' },
+      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      { title: 'Project Planning Tool' },
     ],
-    links: [
-      {
-        rel: 'stylesheet',
-        href: appCss,
-      },
-    ],
+    links: [{ rel: 'stylesheet', href: appCss }],
   }),
+
   shellComponent: RootDocument,
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  const location = useLocation()
-  let token = false
-
-  if (location.pathname === '/login' || location.pathname === '/register') {
-    token = false
-  } else {
-    token = true
-  }
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <HeadContent />
       </head>
+
       <body className="font-sans antialiased [overflow-wrap:anywhere] selection:bg-[rgba(79,184,178,0.24)]">
         <PostHogProvider>
-          {token && <Header />}
           {children}
-          {token && <Footer />}
+          <Toaster />
           <TanStackDevtools
-            config={{
-              position: 'bottom-right',
-            }}
+            config={{ position: 'bottom-right' }}
             plugins={[
               {
                 name: 'Tanstack Router',

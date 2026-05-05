@@ -16,7 +16,11 @@ type LoginFormProps = {
   error?: string
 }
 
-export function LoginForm({ onSubmit, error, isLoading }: LoginFormProps) {
+export function LoginForm({
+  onSubmit,
+  error,
+  isLoading,
+}: Readonly<LoginFormProps>) {
   const form = useAppForm({
     defaultValues: {
       email: '',
@@ -48,35 +52,37 @@ export function LoginForm({ onSubmit, error, isLoading }: LoginFormProps) {
         >
           <FieldGroup>
             <Field>
-              <form.AppField
-                name="email"
-                children={(field) => (
+              <form.AppField name="email">
+                {(field) => (
                   <field.TextField
                     label="Email"
                     type="email"
+                    autoComplete="email"
                     placeholder="m@example.com"
                   />
                 )}
-              />
+              </form.AppField>
             </Field>
 
             <Field>
-              <form.AppField
-                name="password"
-                children={(field) => (
+              <form.AppField name="password">
+                {(field) => (
                   <field.TextField
                     label="Password"
                     type="password"
                     placeholder="••••••••"
                     autoComplete="current-password"
                     forgotPassword={
-                      <a className="ml-auto inline-block text-sm underline-offset-4 hover:underline">
+                      <a
+                        href="#"
+                        className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                      >
                         Forgot your password?
                       </a>
                     }
                   />
                 )}
-              />
+              </form.AppField>
             </Field>
 
             <Field>

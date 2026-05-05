@@ -1,44 +1,56 @@
 import { createServerFn } from '@tanstack/react-start'
+import { api } from '#/api/http'
 
-const BACKEND_URL = import.meta.env.BACKEND_URL || 'http://localhost:4000'
-
-export const isAuthenticated = createServerFn({
+const isAuthenticatedServer = createServerFn({
   method: 'GET',
 }).handler(async (ctx) => {
   try {
-    const { request } = ctx as any
-    
-    let cookieHeader: string | null = null
-    
-    if (request?.headers) {
-      const headers = request.headers
-      cookieHeader = headers.get?.('cookie') || headers.cookie || headers['cookie']
+    const { request } = ctx as { request?: Request }
+    const cookieHeader = request?.headers?.get?.('cookie') ?? null
+
+    if (!cookieHeader) {
+      return { authenticated: false }
     }
 
-    if (!cookieHeader) return false
-
-    const res = await fetch(`${BACKEND_URL}/auth/validate`, {
-      method: 'GET',
+    const res = await api.get('/auth/validate', {
       headers: { Cookie: cookieHeader },
+      withCredentials: false,
     })
 
-    return res.ok
-  } catch (error) {
-    console.error('Auth check error:', error)
-    return false
+    return {
+      authenticated: res.status >= 200 && res.status < 300,
+    }
+  } catch {
+    return { authenticated: false }
   }
 })
 
-export async function checkAuthClient(): Promise<boolean> {
+async function getClientAuthState() {
   try {
-    const res = await fetch(`${BACKEND_URL}/auth/validate`, {
-      method: 'GET',
-      credentials: 'include',
+    const res = await api.get('/auth/validate', {
+      headers: {
+        'Cache-Control': 'no-cache',
+        Pragma: 'no-cache',
+      },
     })
 
-    return res.ok
-  } catch (error) {
-    console.error('Client auth check error:', error)
-    return false
+    return {
+      authenticated: res.status >= 200 && res.status < 300,
+    }
+  } catch {
+    return { authenticated: false }
   }
 }
+
+export const authQuery = () => ({
+  queryKey: ['auth'],
+  queryFn: () =>
+    typeof window === 'undefined'
+      ? isAuthenticatedServer()
+      : getClientAuthState(),
+  staleTime: 30 * 1000,
+  gcTime: 5 * 60 * 1000,
+  refetchOnMount: false,
+  refetchOnWindowFocus: false,
+  refetchOnReconnect: false,
+})

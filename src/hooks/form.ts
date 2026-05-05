@@ -1,12 +1,9 @@
 import { createFormHook, useStore } from '@tanstack/react-form'
-
-import {
-  Select,
-  SubscribeButton,
-  Switch,
-  TextArea,
-  TextField,
-} from '../components/FormComponents'
+import { Select } from '#/components/form/select/Select'
+import { SubscribeButton } from '#/components/form/subscribe-button/SubscribeButton'
+import { Switch } from '#/components/form/switch/Switch'
+import { TextArea } from '#/components/form/text-area/TextArea'
+import { TextField } from '#/components/form/text-field/TextField'
 import { fieldContext, formContext, useFieldContext } from './form-context'
 
 export const { useAppForm } = createFormHook({
