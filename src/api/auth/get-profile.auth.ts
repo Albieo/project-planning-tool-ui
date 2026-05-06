@@ -22,7 +22,7 @@ const getProfileServer = createServerFn({
 })
 
 export async function getProfile() {
-  if (typeof window === 'undefined') {
+  if (globalThis.window === undefined) {
     return getProfileServer()
   }
 

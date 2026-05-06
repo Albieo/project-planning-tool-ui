@@ -2,13 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { api } from '#/api/http'
 import type { ProfileResponse } from '#/lib/interfaces/profile-response.interface'
-
-type UpdateProfilePayload = {
-  name: string
-  username: string
-  email: string
-  avatar: File | null
-}
+import type { UpdateProfilePayload } from '#/lib/interfaces/update-profile-payload.interface'
 
 async function updateProfileRequest(data: UpdateProfilePayload) {
   const profileRes = await api.patch<ProfileResponse>('/auth/profile', {
@@ -40,7 +34,9 @@ async function updateProfileRequest(data: UpdateProfilePayload) {
     })
 
     if (uploadRes.status >= 400) {
-      throw new Error(uploadRes.data?.message || 'Failed to upload profile photo')
+      throw new Error(
+        uploadRes.data?.message || 'Failed to upload profile photo',
+      )
     }
 
     nextProfile = {

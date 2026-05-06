@@ -1,4 +1,5 @@
-import { useEffect, useState, type ComponentType, type ReactNode } from 'react'
+import { useEffect, useState   } from 'react'
+import type {ComponentType, ReactNode} from 'react';
 
 interface PostHogProviderProps {
   children: ReactNode

@@ -13,16 +13,10 @@ import { useAppForm } from '#/hooks/form'
 import { profileSchema } from '#/schemas/profile'
 import { getInitials } from '#/lib/get-initials'
 import { useEffect, useState } from 'react'
-
-type Profile = {
-  name: string
-  username: string
-  email: string
-  profilePhotoUrl?: string | null
-}
+import type { ProfileResponse } from '#/lib/interfaces/profile-response.interface'
 
 type ProfileFormProps = {
-  profile: Profile
+  profile: ProfileResponse
   onSubmit: (data: {
     name: string
     username: string
@@ -52,7 +46,7 @@ export function ProfileForm({
     },
   })
 
-  const initials = getInitials(profile.name ?? '')
+  const initials = getInitials(profile.name)
   const [editEnabled, setEditEnabled] = useState(true)
   const [previewUrl, setPreviewUrl] = useState<string | null>(
     profile.profilePhotoUrl ?? null,
@@ -78,9 +72,7 @@ export function ProfileForm({
     <Card className="max-w-4xl w-full">
       <CardHeader>
         <CardTitle>Your Profile</CardTitle>
-        <CardDescription>
-          Update your personal information
-        </CardDescription>
+        <CardDescription>Update your personal information</CardDescription>
       </CardHeader>
 
       <CardContent>
@@ -124,7 +116,6 @@ export function ProfileForm({
             {/* Form Fields */}
             <div className="flex-1 w-full">
               <FieldGroup>
-
                 <Field>
                   <form.AppField name="name">
                     {(field) => (
@@ -168,7 +159,7 @@ export function ProfileForm({
                 <Field>
                   <form.AppForm>
                     {!editEnabled && (
-                      <div className='grid grid-flow-col-dense grid-cols-1 md:grid-cols-2 w-full gap-4'>
+                      <div className="grid grid-flow-col-dense grid-cols-1 md:grid-cols-2 w-full gap-4">
                         <form.SubscribeButton
                           label={isLoading ? 'Saving...' : 'Save Changes'}
                         />
@@ -198,7 +189,6 @@ export function ProfileForm({
                     )}
                   </form.AppForm>
                 </Field>
-
               </FieldGroup>
             </div>
           </div>

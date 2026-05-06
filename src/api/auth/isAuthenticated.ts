@@ -45,7 +45,7 @@ async function getClientAuthState() {
 export const authQuery = () => ({
   queryKey: ['auth'],
   queryFn: () =>
-    typeof window === 'undefined'
+    globalThis.window === undefined
       ? isAuthenticatedServer()
       : getClientAuthState(),
   staleTime: 30 * 1000,
