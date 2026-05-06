@@ -10,13 +10,10 @@ async function updateProfileRequest(data: UpdateProfilePayload) {
     username: data.username,
   })
 
-  if (profileRes.status === 409) {
+  if (profileRes.status === 409)
     throw new Error('That username is already taken')
-  }
 
-  if (profileRes.status >= 400) {
-    throw new Error('Failed to update profile')
-  }
+  if (profileRes.status >= 400) throw new Error('Failed to update profile')
 
   let nextProfile = profileRes.data
 

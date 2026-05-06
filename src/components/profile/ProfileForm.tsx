@@ -14,6 +14,7 @@ import { profileSchema } from '#/schemas/profile'
 import { getInitials } from '#/lib/get-initials'
 import { useEffect, useState } from 'react'
 import type { ProfileResponse } from '#/lib/interfaces/profile-response.interface'
+import { useDeleteProfile } from '#/api/auth/delete-profile.auth'
 
 type ProfileFormProps = {
   profile: ProfileResponse
@@ -51,7 +52,7 @@ export function ProfileForm({
   const [previewUrl, setPreviewUrl] = useState<string | null>(
     profile.profilePhotoUrl ?? null,
   )
-
+  const { mutate } = useDeleteProfile()
   const avatarFile = form.state.values.avatar
 
   useEffect(() => {
@@ -178,14 +179,24 @@ export function ProfileForm({
                     )}
 
                     {editEnabled && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setEditEnabled(false)}
-                      >
-                        Edit Profile
-                      </Button>
+                      <div className='grid grid-flow-col-dense grid-cols-1 md:grid-cols-2 w-full gap-4'>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setEditEnabled(false)}
+                        >
+                          Edit Profile
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => mutate()}
+                        >
+                          Delete Account
+                        </Button>
+                      </div>
                     )}
                   </form.AppForm>
                 </Field>
