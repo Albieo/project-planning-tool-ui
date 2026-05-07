@@ -6,8 +6,8 @@ import type { ProfileResponse } from '#/lib/interfaces/profile-response.interfac
 const getProfileServer = createServerFn({
   method: 'GET',
 }).handler(async (ctx) => {
-  const { request } = ctx as { request?: Request }
-  const cookieHeader = request?.headers?.get?.('cookie') ?? ''
+  const { request } = ctx as { request: Request }
+  const cookieHeader = request.headers.get('cookie') ?? ''
 
   const res = await api.get<ProfileResponse>('/auth/profile', {
     headers: cookieHeader ? { Cookie: cookieHeader } : undefined,
@@ -22,7 +22,7 @@ const getProfileServer = createServerFn({
 })
 
 export async function getProfile() {
-  if (globalThis.window === undefined) {
+  if (typeof window === 'undefined') {
     return getProfileServer()
   }
 

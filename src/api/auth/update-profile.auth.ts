@@ -31,8 +31,15 @@ async function updateProfileRequest(data: UpdateProfilePayload) {
     })
 
     if (uploadRes.status >= 400) {
+      const uploadError = uploadRes.data as {
+        error?: string
+        message?: string
+      }
+
       throw new Error(
-        uploadRes.data?.message || 'Failed to upload profile photo',
+        uploadError.message ||
+          uploadError.error ||
+          'Failed to upload profile photo',
       )
     }
 

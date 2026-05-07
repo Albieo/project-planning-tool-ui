@@ -5,8 +5,8 @@ const isAuthenticatedServer = createServerFn({
   method: 'GET',
 }).handler(async (ctx) => {
   try {
-    const { request } = ctx as { request?: Request }
-    const cookieHeader = request?.headers?.get?.('cookie') ?? null
+    const { request } = ctx as { request: Request }
+    const cookieHeader = request.headers.get('cookie')
 
     if (!cookieHeader) {
       return { authenticated: false }
@@ -45,7 +45,7 @@ async function getClientAuthState() {
 export const authQuery = () => ({
   queryKey: ['auth'],
   queryFn: () =>
-    globalThis.window === undefined
+    typeof window === 'undefined'
       ? isAuthenticatedServer()
       : getClientAuthState(),
   staleTime: 30 * 1000,

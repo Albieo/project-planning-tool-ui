@@ -4,7 +4,9 @@ import { toast } from 'sonner'
 import { api } from '#/api/http'
 
 async function deleteProfileRequest() {
-  const res = await api.delete('/auth/profile')
+  const res = await api.delete('/auth/profile', {
+    withCredentials: true,
+  })
 
   if (res.status >= 400) {
     throw new Error('Failed to delete profile')

@@ -15,6 +15,7 @@ import { getInitials } from '#/lib/get-initials'
 import { useEffect, useState } from 'react'
 import type { ProfileResponse } from '#/lib/interfaces/profile-response.interface'
 import { useDeleteProfile } from '#/api/auth/delete-profile.auth'
+import { resolveBackendUrl } from '#/api/http'
 
 type ProfileFormProps = {
   profile: ProfileResponse
@@ -50,14 +51,14 @@ export function ProfileForm({
   const initials = getInitials(profile.name)
   const [editEnabled, setEditEnabled] = useState(true)
   const [previewUrl, setPreviewUrl] = useState<string | null>(
-    profile.profilePhotoUrl ?? null,
+    resolveBackendUrl(profile.profilePhotoUrl) ?? null,
   )
-  const { mutate } = useDeleteProfile()
+  const { mutate: deleteProfile, isPending: isDeleting } = useDeleteProfile()
   const avatarFile = form.state.values.avatar
 
   useEffect(() => {
     if (!avatarFile) {
-      setPreviewUrl(profile.profilePhotoUrl ?? null)
+      setPreviewUrl(resolveBackendUrl(profile.profilePhotoUrl) ?? null)
       return
     }
 
@@ -68,6 +69,16 @@ export function ProfileForm({
       URL.revokeObjectURL(objectUrl)
     }
   }, [avatarFile, profile.profilePhotoUrl])
+
+  const handleDeleteProfile = () => {
+    const confirmed = window.confirm(
+      'Delete your account? This cannot be undone.',
+    )
+
+    if (confirmed) {
+      deleteProfile()
+    }
+  }
 
   return (
     <Card className="max-w-4xl w-full">
@@ -179,11 +190,12 @@ export function ProfileForm({
                     )}
 
                     {editEnabled && (
-                      <div className='grid grid-flow-col-dense grid-cols-1 md:grid-cols-2 w-full gap-4'>
+                      <div className="grid grid-flow-col-dense grid-cols-1 md:grid-cols-2 w-full gap-4">
                         <Button
                           type="button"
                           variant="outline"
                           size="sm"
+                          disabled={isDeleting}
                           onClick={() => setEditEnabled(false)}
                         >
                           Edit Profile
@@ -192,9 +204,10 @@ export function ProfileForm({
                           type="button"
                           variant="destructive"
                           size="sm"
-                          onClick={() => mutate()}
+                          disabled={isDeleting}
+                          onClick={handleDeleteProfile}
                         >
-                          Delete Account
+                          {isDeleting ? 'Deleting...' : 'Delete Account'}
                         </Button>
                       </div>
                     )}

@@ -13,6 +13,13 @@ export const api = axios.create({
   validateStatus: () => true,
 })
 
+export function resolveBackendUrl(path?: string | null) {
+  if (!path) return undefined
+  if (/^(blob:|data:|https?:\/\/)/i.test(path)) return path
+
+  return new URL(path, BACKEND_URL).toString()
+}
+
 api.interceptors.response.use(
   (response) => {
     if (response.config.url?.includes('/logout') && response.status === 200) {
