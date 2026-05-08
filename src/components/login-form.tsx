@@ -73,12 +73,12 @@ export function LoginForm({
                     placeholder="••••••••"
                     autoComplete="current-password"
                     forgotPassword={
-                      <a
-                        href="#"
+                      <Link
+                        to="/reset-password"
                         className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
                       >
                         Forgot your password?
-                      </a>
+                      </Link>
                     }
                   />
                 )}
