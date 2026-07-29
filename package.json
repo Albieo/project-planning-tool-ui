@@ -11,8 +11,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "lint": "eslint",
-    "format": "prettier --check .",
-    "check": "prettier --write . && eslint --fix",
+    "check": "prettier --check .",
+    "format": "prettier --write . && eslint --fix",
     "start": "node --import ./dist/server/instrument.server.mjs dist/server/server.js"
   },
   "dependencies": {

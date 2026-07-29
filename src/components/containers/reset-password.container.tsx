@@ -4,7 +4,9 @@ import {
 } from '#/api/auth/reset-password.auth'
 import { ResetPasswordForm } from '#/components/reset-password-form'
 
-export function ResetPasswordContainer({ token }: Readonly<{ token?: string }>) {
+export function ResetPasswordContainer({
+  token,
+}: Readonly<{ token?: string }>) {
   const requestMutation = useRequestPasswordReset()
   const resetMutation = useResetPassword()
   const activeMutation = token ? resetMutation : requestMutation
