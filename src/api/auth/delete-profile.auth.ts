@@ -22,10 +22,13 @@ export const useDeleteProfile = () => {
   return useMutation({
     mutationFn: deleteProfileRequest,
     onSuccess: async () => {
+      await queryClient.cancelQueries({ queryKey: ['auth'] })
       queryClient.setQueryData(['auth'], { authenticated: false })
-      queryClient.removeQueries({ queryKey: ['auth', 'profile'] })
+      queryClient.removeQueries({ queryKey: ['auth', 'profile'], exact: true })
+      await router.invalidate()
+
       toast.success('Profile deleted successfully')
-      navigate({ to: '/login', replace: true })
+      await navigate({ to: '/login', replace: true })
     },
     onError: (error: Error) => {
       toast.error(error.message)
