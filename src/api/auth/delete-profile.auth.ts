@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useNavigate } from '@tanstack/react-router'
+import { useNavigate, useRouter } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import { api } from '#/api/http'
 
@@ -23,13 +23,16 @@ export const useDeleteProfile = () => {
   return useMutation({
     mutationFn: deleteProfileRequest,
     onSuccess: async () => {
-      await queryClient.cancelQueries({ queryKey: ['auth'] })
-      queryClient.setQueryData(['auth'], { authenticated: false })
-      queryClient.removeQueries({ queryKey: ['auth', 'profile'], exact: true })
+      queryClient.clear()
+
       await router.invalidate()
 
       toast.success('Profile deleted successfully')
-      await navigate({ to: '/login', replace: true })
+
+      await navigate({
+        to: '/login',
+        replace: true,
+      })
     },
     onError: (error: Error) => {
       toast.error(error.message)

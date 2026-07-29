@@ -19,18 +19,3 @@ export function resolveBackendUrl(path?: string | null) {
 
   return new URL(path, BACKEND_URL).toString()
 }
-
-api.interceptors.response.use(
-  (response) => {
-    if (response.config.url?.includes('/logout') && response.status === 200) {
-      document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
-    }
-    return response
-  },
-  (error) => {
-    if (error.response?.status === 401) {
-      document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
-    }
-    return Promise.reject(error)
-  },
-)
