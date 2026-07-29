@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useAppForm } from '#/hooks/form'
 import { profileSchema } from '#/schemas/profile'
 import { getInitials } from '#/lib/get-initials'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { ProfileResponse } from '#/lib/interfaces/profile-response.interface'
 import { useDeleteProfile } from '#/api/auth/delete-profile.auth'
 import { resolveBackendUrl } from '#/api/http'
@@ -45,15 +45,17 @@ export function ProfileForm({
     },
     onSubmit: async ({ value }) => {
       await onSubmit(value)
+      setIsEditing(false)
     },
   })
 
   const initials = getInitials(profile.name)
-  const [editEnabled, setEditEnabled] = useState(true)
+  const [isEditing, setIsEditing] = useState(false)
   const [previewUrl, setPreviewUrl] = useState<string | null>(
     resolveBackendUrl(profile.profilePhotoUrl) ?? null,
   )
   const { mutate: deleteProfile, isPending: isDeleting } = useDeleteProfile()
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const avatarFile = form.state.values.avatar
 
   useEffect(() => {
@@ -102,23 +104,23 @@ export function ProfileForm({
               </Avatar>
 
               <input
+                ref={fileInputRef}
                 type="file"
-                id="avatar-upload"
                 className="hidden"
                 onChange={(e) => {
                   const file = e.target.files?.[0] ?? null
                   form.setFieldValue('avatar', file)
                 }}
-                disabled={editEnabled}
+                disabled={!isEditing}
               />
 
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
-                disabled={editEnabled}
+                disabled={!isEditing}
                 onClick={() =>
-                  document.getElementById('avatar-upload')?.click()
+                  fileInputRef.current?.click()
                 }
               >
                 Change Photo
@@ -135,7 +137,7 @@ export function ProfileForm({
                         label="Full Name"
                         placeholder="John Doe"
                         autoComplete="name"
-                        readOnly={editEnabled}
+                        readOnly={!isEditing}
                       />
                     )}
                   </form.AppField>
@@ -148,7 +150,7 @@ export function ProfileForm({
                         label="Username"
                         placeholder="@johndoe"
                         autoComplete="username"
-                        readOnly={editEnabled}
+                        readOnly={!isEditing}
                       />
                     )}
                   </form.AppField>
@@ -162,7 +164,7 @@ export function ProfileForm({
                         type="email"
                         autoComplete="email"
                         placeholder="john@example.com"
-                        readOnly={editEnabled}
+                        readOnly={!isEditing}
                       />
                     )}
                   </form.AppField>
@@ -170,7 +172,7 @@ export function ProfileForm({
 
                 <Field>
                   <form.AppForm>
-                    {!editEnabled && (
+                    {isEditing && (
                       <div className="grid grid-flow-col-dense grid-cols-1 md:grid-cols-2 w-full gap-4">
                         <form.SubscribeButton
                           label={isLoading ? 'Saving...' : 'Save Changes'}
@@ -181,7 +183,7 @@ export function ProfileForm({
                           size="sm"
                           onClick={() => {
                             form.reset()
-                            setEditEnabled(true)
+                            setIsEditing(false)
                           }}
                         >
                           Cancel
@@ -189,14 +191,14 @@ export function ProfileForm({
                       </div>
                     )}
 
-                    {editEnabled && (
+                    {!isEditing && (
                       <div className="grid grid-flow-col-dense grid-cols-1 md:grid-cols-2 w-full gap-4">
                         <Button
                           type="button"
                           variant="outline"
                           size="sm"
                           disabled={isDeleting}
-                          onClick={() => setEditEnabled(false)}
+                          onClick={() => setIsEditing(true)}
                         >
                           Edit Profile
                         </Button>
