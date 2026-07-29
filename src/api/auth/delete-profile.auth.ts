@@ -18,6 +18,7 @@ async function deleteProfileRequest() {
 export const useDeleteProfile = () => {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
+  const router = useRouter()
 
   return useMutation({
     mutationFn: deleteProfileRequest,
