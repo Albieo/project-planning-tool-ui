@@ -119,9 +119,7 @@ export function ProfileForm({
                 variant="outline"
                 size="sm"
                 disabled={!isEditing}
-                onClick={() =>
-                  fileInputRef.current?.click()
-                }
+                onClick={() => fileInputRef.current?.click()}
               >
                 Change Photo
               </Button>
