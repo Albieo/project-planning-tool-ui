@@ -72,7 +72,9 @@ describe('ProfileContainer', () => {
 
     expect(screen.getByTestId('profile-form')).not.toBeNull()
     expect(screen.getByTestId('loading').textContent).toBe('true')
-    expect(screen.getByTestId('profile').textContent).toBe(JSON.stringify(profile))
+    expect(screen.getByTestId('profile').textContent).toBe(
+      JSON.stringify(profile),
+    )
   })
 
   it('calls mutateAsync with the submitted data', async () => {
@@ -85,7 +87,9 @@ describe('ProfileContainer', () => {
 
     render(<ProfileContainer />)
 
-    expect(screen.getByTestId('profile').textContent).toBe(JSON.stringify(profile))
+    expect(screen.getByTestId('profile').textContent).toBe(
+      JSON.stringify(profile),
+    )
 
     const payload: UpdateProfilePayload = {
       name: 'Updated Name',
@@ -108,7 +112,9 @@ describe('ProfileContainer', () => {
 
     render(<ProfileContainer />)
 
-    expect(screen.getByTestId('profile').textContent).toBe(JSON.stringify(profile))
+    expect(screen.getByTestId('profile').textContent).toBe(
+      JSON.stringify(profile),
+    )
 
     const payload: UpdateProfilePayload = {
       name: 'Updated Name',
