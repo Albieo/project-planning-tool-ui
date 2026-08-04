@@ -11,8 +11,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "lint": "eslint",
-    "format": "prettier --check .",
-    "check": "prettier --write . && eslint --fix",
+    "check": "prettier --check .",
+    "format": "prettier --write . && eslint --fix",
     "start": "node --import ./dist/server/instrument.server.mjs dist/server/server.js"
   },
   "dependencies": {
@@ -38,6 +38,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv-cli": "^11.0.0",
+    "framer-motion": "^12.38.0",
     "graphql": "^16.10.0",
     "lucide-react": "^0.577.0",
     "next-themes": "^0.4.6",
@@ -62,6 +63,7 @@
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^5.1.4",
+    "eslint": "^10.8.0",
     "jsdom": "^28.1.0",
     "prettier": "^3.8.1",
     "typescript": "^5.7.2",

@@ -1,18 +1,19 @@
 import { useGetProfile } from '#/api/auth/get-profile.auth'
 import { useUpdateProfile } from '#/api/auth/update-profile.auth'
 import { ProfileForm } from '#/components/profile/ProfileForm'
+import type { UpdateProfilePayload } from '#/lib/interfaces/update-profile-payload.interface'
 
+/**
+ * Renders the profile form when the user's profile is available.
+ *
+ * @returns The profile form or `null` when the profile is unavailable.
+ */
 export function ProfileContainer() {
   const { data: profile } = useGetProfile()
   const mutation = useUpdateProfile()
 
-  const handleSubmit = async (data: {
-    name: string
-    username: string
-    email: string
-    avatar: File | null
-  }) => {
-    await mutation.mutateAsync(data)
+  const handleSubmit = async (data: UpdateProfilePayload) => {
+    await mutation.mutateAsync(data).catch(() => {})
   }
 
   return profile ? (

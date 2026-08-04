@@ -12,26 +12,26 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useAppForm } from '#/hooks/form'
 import { profileSchema } from '#/schemas/profile'
 import { getInitials } from '#/lib/get-initials'
-import { useEffect, useState } from 'react'
-
-type Profile = {
-  name: string
-  username: string
-  email: string
-  profilePhotoUrl?: string | null
-}
+import { useEffect, useRef, useState } from 'react'
+import type { ProfileResponse } from '#/lib/interfaces/profile-response.interface'
+import type { UpdateProfilePayload } from '#/lib/interfaces/update-profile-payload.interface'
+import { useDeleteProfile } from '#/api/auth/delete-profile.auth'
+import { resolveBackendUrl } from '#/api/http'
 
 type ProfileFormProps = {
-  profile: Profile
-  onSubmit: (data: {
-    name: string
-    username: string
-    email: string
-    avatar: File | null
-  }) => Promise<void>
+  profile: ProfileResponse
+  onSubmit: (data: UpdateProfilePayload) => Promise<void>
   isLoading?: boolean
 }
 
+/**
+ * Renders a profile form for viewing, editing, and deleting account information.
+ *
+ * @param profile - The profile data displayed and used to initialize the form.
+ * @param onSubmit - Handles submitted profile updates.
+ * @param isLoading - Whether a profile update is in progress.
+ * @returns The profile management form.
+ */
 export function ProfileForm({
   profile,
   onSubmit,
@@ -49,20 +49,22 @@ export function ProfileForm({
     },
     onSubmit: async ({ value }) => {
       await onSubmit(value)
+      setIsEditing(false)
     },
   })
 
-  const initials = getInitials(profile.name ?? '')
-  const [editEnabled, setEditEnabled] = useState(true)
+  const initials = getInitials(profile.name)
+  const [isEditing, setIsEditing] = useState(false)
   const [previewUrl, setPreviewUrl] = useState<string | null>(
-    profile.profilePhotoUrl ?? null,
+    resolveBackendUrl(profile.profilePhotoUrl) ?? null,
   )
-
+  const { mutate: deleteProfile, isPending: isDeleting } = useDeleteProfile()
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const avatarFile = form.state.values.avatar
 
   useEffect(() => {
     if (!avatarFile) {
-      setPreviewUrl(profile.profilePhotoUrl ?? null)
+      setPreviewUrl(resolveBackendUrl(profile.profilePhotoUrl) ?? null)
       return
     }
 
@@ -74,13 +76,21 @@ export function ProfileForm({
     }
   }, [avatarFile, profile.profilePhotoUrl])
 
+  const handleDeleteProfile = () => {
+    const confirmed = window.confirm(
+      'Delete your account? This cannot be undone.',
+    )
+
+    if (confirmed) {
+      deleteProfile()
+    }
+  }
+
   return (
     <Card className="max-w-4xl w-full">
       <CardHeader>
         <CardTitle>Your Profile</CardTitle>
-        <CardDescription>
-          Update your personal information
-        </CardDescription>
+        <CardDescription>Update your personal information</CardDescription>
       </CardHeader>
 
       <CardContent>
@@ -98,24 +108,24 @@ export function ProfileForm({
               </Avatar>
 
               <input
+                ref={fileInputRef}
                 type="file"
-                id="avatar-upload"
+                accept="image/*"
+                aria-label="Upload profile photo"
                 className="hidden"
                 onChange={(e) => {
                   const file = e.target.files?.[0] ?? null
                   form.setFieldValue('avatar', file)
                 }}
-                disabled={editEnabled}
+                disabled={!isEditing}
               />
 
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
-                disabled={editEnabled}
-                onClick={() =>
-                  document.getElementById('avatar-upload')?.click()
-                }
+                disabled={!isEditing}
+                onClick={() => fileInputRef.current?.click()}
               >
                 Change Photo
               </Button>
@@ -124,7 +134,6 @@ export function ProfileForm({
             {/* Form Fields */}
             <div className="flex-1 w-full">
               <FieldGroup>
-
                 <Field>
                   <form.AppField name="name">
                     {(field) => (
@@ -132,7 +141,7 @@ export function ProfileForm({
                         label="Full Name"
                         placeholder="John Doe"
                         autoComplete="name"
-                        readOnly={editEnabled}
+                        readOnly={!isEditing}
                       />
                     )}
                   </form.AppField>
@@ -145,7 +154,7 @@ export function ProfileForm({
                         label="Username"
                         placeholder="@johndoe"
                         autoComplete="username"
-                        readOnly={editEnabled}
+                        readOnly={!isEditing}
                       />
                     )}
                   </form.AppField>
@@ -159,7 +168,7 @@ export function ProfileForm({
                         type="email"
                         autoComplete="email"
                         placeholder="john@example.com"
-                        readOnly={editEnabled}
+                        readOnly={!isEditing}
                       />
                     )}
                   </form.AppField>
@@ -167,8 +176,8 @@ export function ProfileForm({
 
                 <Field>
                   <form.AppForm>
-                    {!editEnabled && (
-                      <div className='grid grid-flow-col-dense grid-cols-1 md:grid-cols-2 w-full gap-4'>
+                    {isEditing && (
+                      <div className="grid grid-flow-col-dense grid-cols-1 md:grid-cols-2 w-full gap-4">
                         <form.SubscribeButton
                           label={isLoading ? 'Saving...' : 'Save Changes'}
                         />
@@ -178,7 +187,7 @@ export function ProfileForm({
                           size="sm"
                           onClick={() => {
                             form.reset()
-                            setEditEnabled(true)
+                            setIsEditing(false)
                           }}
                         >
                           Cancel
@@ -186,19 +195,30 @@ export function ProfileForm({
                       </div>
                     )}
 
-                    {editEnabled && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setEditEnabled(false)}
-                      >
-                        Edit Profile
-                      </Button>
+                    {!isEditing && (
+                      <div className="grid grid-flow-col-dense grid-cols-1 md:grid-cols-2 w-full gap-4">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          disabled={isDeleting}
+                          onClick={() => setIsEditing(true)}
+                        >
+                          Edit Profile
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          disabled={isDeleting}
+                          onClick={handleDeleteProfile}
+                        >
+                          {isDeleting ? 'Deleting...' : 'Delete Account'}
+                        </Button>
+                      </div>
                     )}
                   </form.AppForm>
                 </Field>
-
               </FieldGroup>
             </div>
           </div>

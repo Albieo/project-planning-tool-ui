@@ -13,6 +13,7 @@ import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as AppRouteRouteImport } from './routes/_app/route'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppAuthenticatedRouteRouteImport } from './routes/_app/_authenticated/route'
+import { Route as AuthResetPasswordIndexRouteImport } from './routes/_auth/reset-password/index'
 import { Route as AuthRegisterIndexRouteImport } from './routes/_auth/register/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/_auth/login/index'
 import { Route as AppAuthenticatedProfileIndexRouteImport } from './routes/_app/_authenticated/profile/index'
@@ -34,6 +35,11 @@ const AppIndexRoute = AppIndexRouteImport.update({
 const AppAuthenticatedRouteRoute = AppAuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => AppRouteRoute,
+} as any)
+const AuthResetPasswordIndexRoute = AuthResetPasswordIndexRouteImport.update({
+  id: '/reset-password/',
+  path: '/reset-password/',
+  getParentRoute: () => AuthRouteRoute,
 } as any)
 const AuthRegisterIndexRoute = AuthRegisterIndexRouteImport.update({
   id: '/register/',
@@ -62,6 +68,7 @@ export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/login/': typeof AuthLoginIndexRoute
   '/register/': typeof AuthRegisterIndexRoute
+  '/reset-password/': typeof AuthResetPasswordIndexRoute
   '/dashboard/': typeof AppAuthenticatedDashboardIndexRoute
   '/profile/': typeof AppAuthenticatedProfileIndexRoute
 }
@@ -69,6 +76,7 @@ export interface FileRoutesByTo {
   '/': typeof AppIndexRoute
   '/login': typeof AuthLoginIndexRoute
   '/register': typeof AuthRegisterIndexRoute
+  '/reset-password': typeof AuthResetPasswordIndexRoute
   '/dashboard': typeof AppAuthenticatedDashboardIndexRoute
   '/profile': typeof AppAuthenticatedProfileIndexRoute
 }
@@ -80,14 +88,27 @@ export interface FileRoutesById {
   '/_app/': typeof AppIndexRoute
   '/_auth/login/': typeof AuthLoginIndexRoute
   '/_auth/register/': typeof AuthRegisterIndexRoute
+  '/_auth/reset-password/': typeof AuthResetPasswordIndexRoute
   '/_app/_authenticated/dashboard/': typeof AppAuthenticatedDashboardIndexRoute
   '/_app/_authenticated/profile/': typeof AppAuthenticatedProfileIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login/' | '/register/' | '/dashboard/' | '/profile/'
+  fullPaths:
+    | '/'
+    | '/login/'
+    | '/register/'
+    | '/reset-password/'
+    | '/dashboard/'
+    | '/profile/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/register' | '/dashboard' | '/profile'
+  to:
+    | '/'
+    | '/login'
+    | '/register'
+    | '/reset-password'
+    | '/dashboard'
+    | '/profile'
   id:
     | '__root__'
     | '/_app'
@@ -96,6 +117,7 @@ export interface FileRouteTypes {
     | '/_app/'
     | '/_auth/login/'
     | '/_auth/register/'
+    | '/_auth/reset-password/'
     | '/_app/_authenticated/dashboard/'
     | '/_app/_authenticated/profile/'
   fileRoutesById: FileRoutesById
@@ -134,6 +156,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof AppAuthenticatedRouteRouteImport
       parentRoute: typeof AppRouteRoute
+    }
+    '/_auth/reset-password/': {
+      id: '/_auth/reset-password/'
+      path: '/reset-password'
+      fullPath: '/reset-password/'
+      preLoaderRoute: typeof AuthResetPasswordIndexRouteImport
+      parentRoute: typeof AuthRouteRoute
     }
     '/_auth/register/': {
       id: '/_auth/register/'
@@ -198,11 +227,13 @@ const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
 interface AuthRouteRouteChildren {
   AuthLoginIndexRoute: typeof AuthLoginIndexRoute
   AuthRegisterIndexRoute: typeof AuthRegisterIndexRoute
+  AuthResetPasswordIndexRoute: typeof AuthResetPasswordIndexRoute
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
   AuthLoginIndexRoute: AuthLoginIndexRoute,
   AuthRegisterIndexRoute: AuthRegisterIndexRoute,
+  AuthResetPasswordIndexRoute: AuthResetPasswordIndexRoute,
 }
 
 const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(

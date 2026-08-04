@@ -2,27 +2,26 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { api } from '#/api/http'
 import type { ProfileResponse } from '#/lib/interfaces/profile-response.interface'
+import type { UpdateProfilePayload } from '#/lib/interfaces/update-profile-payload.interface'
 
-type UpdateProfilePayload = {
-  name: string
-  username: string
-  email: string
-  avatar: File | null
-}
-
+/**
+ * Updates the user's profile and optionally uploads a new profile photo.
+ *
+ * @param data - The profile fields and optional avatar to update
+ * @returns The updated profile
+ * @throws Error if the username is already taken or the profile or photo update fails
+ */
 async function updateProfileRequest(data: UpdateProfilePayload) {
   const profileRes = await api.patch<ProfileResponse>('/auth/profile', {
     name: data.name,
     username: data.username,
+    email: data.email,
   })
 
-  if (profileRes.status === 409) {
+  if (profileRes.status === 409)
     throw new Error('That username is already taken')
-  }
 
-  if (profileRes.status >= 400) {
-    throw new Error('Failed to update profile')
-  }
+  if (profileRes.status >= 400) throw new Error('Failed to update profile')
 
   let nextProfile = profileRes.data
 
@@ -40,7 +39,16 @@ async function updateProfileRequest(data: UpdateProfilePayload) {
     })
 
     if (uploadRes.status >= 400) {
-      throw new Error(uploadRes.data?.message || 'Failed to upload profile photo')
+      const uploadError = uploadRes.data as {
+        error?: string
+        message?: string
+      }
+
+      throw new Error(
+        uploadError.message ||
+          uploadError.error ||
+          'Failed to upload profile photo',
+      )
     }
 
     nextProfile = {

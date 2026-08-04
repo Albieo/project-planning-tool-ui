@@ -2,7 +2,11 @@ import { Link } from '@tanstack/react-router'
 import ThemeToggle from './ThemeToggle'
 import { useAuth } from '#/hooks/useAuth'
 import { AvatarDropdown } from './AvatarDropdown'
+import { Logo } from './ui/logo'
 
+/**
+ * Renders the application's sticky navigation header with route links, authentication controls, and a theme toggle.
+ */
 export default function Header() {
   const { data, isLoading } = useAuth()
 
@@ -13,12 +17,8 @@ export default function Header() {
       <nav className="page-wrap flex items-center justify-between gap-y-2 py-3 sm:py-4 f-full">
         {/* Logo */}
         <h2 className="m-0 flex-shrink-0 text-base font-semibold tracking-tight">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 rounded-full border border-[var(--chip-line)] bg-[var(--chip-bg)] px-3 py-1.5 text-sm text-[var(--sea-ink)] no-underline shadow-[0_8px_24px_rgba(30,90,72,0.08)] sm:px-4 sm:py-2"
-          >
-            <span className="h-2 w-2 rounded-full bg-[linear-gradient(90deg,#56c6be,#7ed3bf)]" />
-            Project Planning Tool
+          <Link to="/">
+            <Logo />
           </Link>
         </h2>
 

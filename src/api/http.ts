@@ -13,17 +13,20 @@ export const api = axios.create({
   validateStatus: () => true,
 })
 
-api.interceptors.response.use(
-  (response) => {
-    if (response.config.url?.includes('/logout') && response.status === 200) {
-      document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
-    }
-    return response
-  },
-  (error) => {
-    if (error.response?.status === 401) {
-      document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
-    }
-    return Promise.reject(error)
-  },
-)
+/**
+ * Resolves a resource path against the configured backend URL.
+ *
+ * @param path - The resource path or absolute URL to resolve
+ * @returns The resolved URL, the original `blob:`, `data:`, or HTTP(S) URL, or `undefined` for an empty, protocol-relative, or invalid path
+ */
+export function resolveBackendUrl(path?: string | null) {
+  if (!path) return undefined
+  if (/^(blob:|data:|https?:\/\/)/i.test(path)) return path
+  if (/^\/\//.test(path)) return undefined
+
+  try {
+    return new URL(path, BACKEND_URL).toString()
+  } catch {
+    return undefined
+  }
+}
