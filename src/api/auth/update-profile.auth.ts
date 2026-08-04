@@ -8,6 +8,7 @@ async function updateProfileRequest(data: UpdateProfilePayload) {
   const profileRes = await api.patch<ProfileResponse>('/auth/profile', {
     name: data.name,
     username: data.username,
+    email: data.email,
   })
 
   if (profileRes.status === 409)

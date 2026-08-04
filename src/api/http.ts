@@ -16,6 +16,11 @@ export const api = axios.create({
 export function resolveBackendUrl(path?: string | null) {
   if (!path) return undefined
   if (/^(blob:|data:|https?:\/\/)/i.test(path)) return path
+  if (/^\/\//.test(path)) return undefined
 
-  return new URL(path, BACKEND_URL).toString()
+  try {
+    return new URL(path, BACKEND_URL).toString()
+  } catch {
+    return undefined
+  }
 }

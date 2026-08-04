@@ -1,12 +1,13 @@
 import { createServerFn } from '@tanstack/react-start'
+import { getRequest } from '@tanstack/react-start/server'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '#/api/http'
 import type { ProfileResponse } from '#/lib/interfaces/profile-response.interface'
 
 const getProfileServer = createServerFn({
   method: 'GET',
-}).handler(async (ctx) => {
-  const { request } = ctx as { request: Request }
+}).handler(async () => {
+  const request = getRequest()
   const cookieHeader = request.headers.get('cookie') ?? ''
 
   const res = await api.get<ProfileResponse>('/auth/profile', {

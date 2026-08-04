@@ -7,7 +7,7 @@ export const Route = createFileRoute('/_app/')({
 function Home() {
   return (
     <main className="page-wrap px-4 pb-8 pt-14">
-      <h1>Project Planning Tool</h1>
+      <h1>PlanMesh</h1>
     </main>
   )
 }

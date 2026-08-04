@@ -28,7 +28,10 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { title: 'PlanMesh' },
     ],
-    links: [{ rel: 'stylesheet', href: appCss }],
+    links: [
+      { rel: 'stylesheet', href: appCss },
+      { rel: 'manifest', href: '/manifest.json' },
+    ],
   }),
 
   shellComponent: RootDocument,

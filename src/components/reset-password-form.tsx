@@ -112,7 +112,7 @@ export function ResetPasswordForm({
                   />
                 </resetForm.AppForm>
                 {error && (
-                  <FieldDescription className="text-center">
+                  <FieldDescription className="text-center" role="alert">
                     {error}
                   </FieldDescription>
                 )}
@@ -147,7 +147,7 @@ export function ResetPasswordForm({
                   />
                 </requestForm.AppForm>
                 {error && (
-                  <FieldDescription className="text-center">
+                  <FieldDescription className="text-center" role="alert">
                     {error}
                   </FieldDescription>
                 )}

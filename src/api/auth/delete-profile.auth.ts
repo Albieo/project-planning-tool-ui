@@ -23,6 +23,8 @@ export const useDeleteProfile = () => {
   return useMutation({
     mutationFn: deleteProfileRequest,
     onSuccess: async () => {
+      await api.post('/auth/logout')
+
       queryClient.clear()
 
       await router.invalidate()

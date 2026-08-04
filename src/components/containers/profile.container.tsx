@@ -1,17 +1,13 @@
 import { useGetProfile } from '#/api/auth/get-profile.auth'
 import { useUpdateProfile } from '#/api/auth/update-profile.auth'
 import { ProfileForm } from '#/components/profile/ProfileForm'
+import type { UpdateProfilePayload } from '#/lib/interfaces/update-profile-payload.interface'
 
 export function ProfileContainer() {
   const { data: profile } = useGetProfile()
   const mutation = useUpdateProfile()
 
-  const handleSubmit = async (data: {
-    name: string
-    username: string
-    email: string
-    avatar: File | null
-  }) => {
+  const handleSubmit = async (data: UpdateProfilePayload) => {
     await mutation.mutateAsync(data)
   }
 

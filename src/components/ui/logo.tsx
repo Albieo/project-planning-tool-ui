@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 
 type LogoProps = {
   showText?: boolean
@@ -6,10 +6,12 @@ type LogoProps = {
 }
 
 export function Logo({ showText = true, className = '' }: LogoProps) {
+  const shouldReduceMotion = useReducedMotion()
+
   return (
     <span className={`flex items-center gap-2 ${className}`}>
       <motion.div
-        whileHover={{ rotate: 6, scale: 1.03 }}
+        whileHover={shouldReduceMotion ? undefined : { rotate: 6, scale: 1.03 }}
         className="
           relative flex size-10 items-center justify-center overflow-hidden
           rounded-2xl border shadow-sm
@@ -38,8 +40,16 @@ export function Logo({ showText = true, className = '' }: LogoProps) {
 
         <motion.span
           className="absolute size-3 rounded-full bg-[var(--lagoon)]/40"
-          animate={{ scale: [1, 1.9, 1], opacity: [0.6, 0, 0.6] }}
-          transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+          animate={
+            shouldReduceMotion
+              ? { opacity: 0 }
+              : { scale: [1, 1.9, 1], opacity: [0.6, 0, 0.6] }
+          }
+          transition={
+            shouldReduceMotion
+              ? { duration: 0 }
+              : { duration: 2.2, repeat: Infinity, ease: 'easeInOut' }
+          }
         />
       </motion.div>
 

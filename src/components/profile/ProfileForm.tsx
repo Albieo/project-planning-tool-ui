@@ -14,17 +14,13 @@ import { profileSchema } from '#/schemas/profile'
 import { getInitials } from '#/lib/get-initials'
 import { useEffect, useRef, useState } from 'react'
 import type { ProfileResponse } from '#/lib/interfaces/profile-response.interface'
+import type { UpdateProfilePayload } from '#/lib/interfaces/update-profile-payload.interface'
 import { useDeleteProfile } from '#/api/auth/delete-profile.auth'
 import { resolveBackendUrl } from '#/api/http'
 
 type ProfileFormProps = {
   profile: ProfileResponse
-  onSubmit: (data: {
-    name: string
-    username: string
-    email: string
-    avatar: File | null
-  }) => Promise<void>
+  onSubmit: (data: UpdateProfilePayload) => Promise<void>
   isLoading?: boolean
 }
 
@@ -106,6 +102,8 @@ export function ProfileForm({
               <input
                 ref={fileInputRef}
                 type="file"
+                accept="image/*"
+                aria-label="Upload profile photo"
                 className="hidden"
                 onChange={(e) => {
                   const file = e.target.files?.[0] ?? null
