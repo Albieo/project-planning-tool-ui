@@ -129,9 +129,7 @@ describe('ProfileForm - editing', () => {
 
     expect(onSubmit).not.toHaveBeenCalled()
     expect(screen.getByRole('button', { name: 'Edit Profile' })).not.toBeNull()
-    expect((screen.getByLabelText('Full Name')).value).toBe(
-      'Jane Doe',
-    )
+    expect(screen.getByLabelText('Full Name').value).toBe('Jane Doe')
   })
 
   it('updates the avatar preview when a new photo is selected', () => {
