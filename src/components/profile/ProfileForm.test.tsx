@@ -25,7 +25,7 @@ vi.mock('@/components/ui/avatar', () => {
   const React = require('react')
 
   return {
-    Avatar: ({ children }: { children: React.ReactNode }) =>
+    Avatar: ({ children }: { children: ReactNode }) =>
       React.createElement('div', { 'data-testid': 'mock-avatar' }, children),
     AvatarImage: ({ src }: { src?: string }) =>
       src
@@ -35,7 +35,7 @@ vi.mock('@/components/ui/avatar', () => {
             alt: 'Profile',
           })
         : null,
-    AvatarFallback: ({ children }: { children: React.ReactNode }) =>
+    AvatarFallback: ({ children }: { children: ReactNode }) =>
       React.createElement(
         'div',
         { 'data-testid': 'avatar-fallback' },

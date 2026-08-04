@@ -1,7 +1,13 @@
+import * as Sentry from '@sentry/tanstackstart-react'
 import { getRequest } from '@tanstack/react-start/server'
 import { api } from '#/api/http'
 
 async function getAuthStateServerRequest() {
+  const span = Sentry.startSpan({
+    op: 'server.auth.getAuthState',
+    description: 'Server-side auth state lookup',
+  })
+
   try {
     const request = getRequest()
     const cookieHeader = request.headers.get('cookie')
@@ -20,6 +26,8 @@ async function getAuthStateServerRequest() {
     }
   } catch {
     return { authenticated: false }
+  } finally {
+    span.finish()
   }
 }
 

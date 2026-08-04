@@ -42,6 +42,10 @@ let logoutPromise: Promise<void> | null = null
  * This is useful when multiple authentication flows may trigger
  * a logout simultaneously (e.g. expired tokens or session cleanup).
  */
+export function getLogoutPromise(): Promise<void> {
+  return logoutPromise ?? Promise.resolve()
+}
+
 export function ensureLoggedOut(): Promise<void> {
   if (logoutPromise) {
     return logoutPromise

@@ -1,22 +1,32 @@
+import * as Sentry from '@sentry/tanstackstart-react'
 import { getRequest } from '@tanstack/react-start/server'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '#/api/http'
 import type { ProfileResponse } from '#/lib/interfaces/profile-response.interface'
 
 async function getProfileServerRequest() {
-  const request = getRequest()
-  const cookieHeader = request.headers.get('cookie') ?? ''
-
-  const res = await api.get<ProfileResponse>('/auth/profile', {
-    headers: cookieHeader ? { Cookie: cookieHeader } : undefined,
-    withCredentials: false,
+  const span = Sentry.startSpan({
+    op: 'server.auth.getProfile',
+    description: 'Server-side profile fetch',
   })
 
-  if (res.status >= 400) {
-    throw new Error('Failed to fetch profile')
-  }
+  try {
+    const request = getRequest()
+    const cookieHeader = request.headers.get('cookie') ?? ''
 
-  return res.data
+    const res = await api.get<ProfileResponse>('/auth/profile', {
+      headers: cookieHeader ? { Cookie: cookieHeader } : undefined,
+      withCredentials: false,
+    })
+
+    if (res.status >= 400) {
+      throw new Error('Failed to fetch profile')
+    }
+
+    return res.data
+  } finally {
+    span.finish()
+  }
 }
 
 async function getProfileClientRequest() {
