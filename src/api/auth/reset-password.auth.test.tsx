@@ -21,9 +21,8 @@ vi.mock('sonner', () => ({
   toast: { success: toastSuccessMock, error: toastErrorMock },
 }))
 
-const { useRequestPasswordReset, useResetPassword } = await import(
-  '#/api/auth/reset-password.auth'
-)
+const { useRequestPasswordReset, useResetPassword } =
+  await import('#/api/auth/reset-password.auth')
 
 function createWrapper(queryClient: QueryClient) {
   return ({ children }: { children: ReactNode }) => (
@@ -59,10 +58,9 @@ describe('useRequestPasswordReset', () => {
     expect(apiPostMock).toHaveBeenCalledWith('/auth/forgot-password', {
       email: 'user@example.com',
     })
-    expect(toastSuccessMock).toHaveBeenCalledWith(
-      'Password reset email sent',
-      { position: 'bottom-right' },
-    )
+    expect(toastSuccessMock).toHaveBeenCalledWith('Password reset email sent', {
+      position: 'bottom-right',
+    })
   })
 
   it('throws the server-provided message when the request is rejected', async () => {
@@ -148,10 +146,9 @@ describe('useResetPassword', () => {
       token: 'reset-token',
       password: 'password123',
     })
-    expect(toastSuccessMock).toHaveBeenCalledWith(
-      'Password reset successful',
-      { position: 'bottom-right' },
-    )
+    expect(toastSuccessMock).toHaveBeenCalledWith('Password reset successful', {
+      position: 'bottom-right',
+    })
     expect(navigateMock).toHaveBeenCalledWith({
       to: '/login',
       replace: true,

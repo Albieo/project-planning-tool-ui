@@ -1,5 +1,11 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { ReactNode } from 'react'
 import { ResetPasswordForm } from '#/components/reset-password-form'
@@ -20,10 +26,7 @@ afterEach(() => {
 describe('ResetPasswordForm without a token', () => {
   it('renders the request-reset view', () => {
     render(
-      <ResetPasswordForm
-        onRequestReset={vi.fn()}
-        onResetPassword={vi.fn()}
-      />,
+      <ResetPasswordForm onRequestReset={vi.fn()} onResetPassword={vi.fn()} />,
     )
 
     expect(screen.getByText('Forgot your password?')).not.toBeNull()
@@ -177,9 +180,7 @@ describe('ResetPasswordForm with a token', () => {
       />,
     )
 
-    expect(
-      screen.getByRole('button', { name: 'Resetting...' }),
-    ).not.toBeNull()
+    expect(screen.getByRole('button', { name: 'Resetting...' })).not.toBeNull()
   })
 
   it('displays the provided error message', () => {

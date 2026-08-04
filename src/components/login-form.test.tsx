@@ -1,5 +1,11 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { ReactNode } from 'react'
 import { LoginForm } from '#/components/login-form'
@@ -79,8 +85,6 @@ describe('LoginForm', () => {
   it('shows a loading label on the submit button when isLoading is true', () => {
     render(<LoginForm onSubmit={vi.fn()} isLoading />)
 
-    expect(
-      screen.getByRole('button', { name: 'Logging in...' }),
-    ).not.toBeNull()
+    expect(screen.getByRole('button', { name: 'Logging in...' })).not.toBeNull()
   })
 })

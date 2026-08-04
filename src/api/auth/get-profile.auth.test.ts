@@ -40,7 +40,11 @@ describe('getProfile (server codepath)', () => {
     )
     apiGetMock.mockResolvedValue({
       status: 200,
-      data: { name: 'Jane Doe', username: 'janedoe', email: 'jane@example.com' },
+      data: {
+        name: 'Jane Doe',
+        username: 'janedoe',
+        email: 'jane@example.com',
+      },
     })
 
     const result = await getProfile()
@@ -61,7 +65,11 @@ describe('getProfile (server codepath)', () => {
     getRequestMock.mockReturnValue(new Request('http://localhost'))
     apiGetMock.mockResolvedValue({
       status: 200,
-      data: { name: 'Jane Doe', username: 'janedoe', email: 'jane@example.com' },
+      data: {
+        name: 'Jane Doe',
+        username: 'janedoe',
+        email: 'jane@example.com',
+      },
     })
 
     await getProfile()

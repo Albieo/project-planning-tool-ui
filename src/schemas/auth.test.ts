@@ -7,9 +7,9 @@ import {
 
 describe('forgotPasswordSchema', () => {
   it('accepts a valid email', () => {
-    expect(forgotPasswordSchema.parse({ email: 'user@example.com' })).toEqual(
-      { email: 'user@example.com' },
-    )
+    expect(forgotPasswordSchema.parse({ email: 'user@example.com' })).toEqual({
+      email: 'user@example.com',
+    })
   })
 
   it('rejects an invalid email', () => {

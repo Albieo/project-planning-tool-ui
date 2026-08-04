@@ -1,5 +1,11 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ReactNode } from 'react'
 import { ProfileForm } from '#/components/profile/ProfileForm'
@@ -69,9 +75,10 @@ describe('ProfileForm - view mode', () => {
       'disabled',
       true,
     )
-    expect(
-      screen.getByRole('button', { name: 'Change Photo' }),
-    ).toHaveProperty('disabled', true)
+    expect(screen.getByRole('button', { name: 'Change Photo' })).toHaveProperty(
+      'disabled',
+      true,
+    )
   })
 })
 
@@ -81,13 +88,8 @@ describe('ProfileForm - editing', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Edit Profile' }))
 
-    expect(screen.getByLabelText('Full Name')).toHaveProperty(
-      'readOnly',
-      false,
-    )
-    expect(
-      screen.getByRole('button', { name: 'Save Changes' }),
-    ).not.toBeNull()
+    expect(screen.getByLabelText('Full Name')).toHaveProperty('readOnly', false)
+    expect(screen.getByRole('button', { name: 'Save Changes' })).not.toBeNull()
     expect(screen.getByRole('button', { name: 'Cancel' })).not.toBeNull()
     expect(screen.queryByRole('button', { name: 'Edit Profile' })).toBeNull()
   })
@@ -126,10 +128,8 @@ describe('ProfileForm - editing', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
 
     expect(onSubmit).not.toHaveBeenCalled()
-    expect(
-      screen.getByRole('button', { name: 'Edit Profile' }),
-    ).not.toBeNull()
-    expect((screen.getByLabelText('Full Name') as HTMLInputElement).value).toBe(
+    expect(screen.getByRole('button', { name: 'Edit Profile' })).not.toBeNull()
+    expect((screen.getByLabelText('Full Name')).value).toBe(
       'Jane Doe',
     )
   })
@@ -173,11 +173,13 @@ describe('ProfileForm - delete account', () => {
     deleteProfileState = { isPending: true }
     render(<ProfileForm profile={baseProfile} onSubmit={vi.fn()} />)
 
-    expect(
-      screen.getByRole('button', { name: 'Edit Profile' }),
-    ).toHaveProperty('disabled', true)
-    expect(
-      screen.getByRole('button', { name: 'Deleting...' }),
-    ).toHaveProperty('disabled', true)
+    expect(screen.getByRole('button', { name: 'Edit Profile' })).toHaveProperty(
+      'disabled',
+      true,
+    )
+    expect(screen.getByRole('button', { name: 'Deleting...' })).toHaveProperty(
+      'disabled',
+      true,
+    )
   })
 })
