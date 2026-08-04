@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook, waitFor } from '@testing-library/react'
+import { act, renderHook, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ReactNode } from 'react'
 
@@ -53,7 +53,9 @@ describe('useRequestPasswordReset', () => {
       wrapper: createWrapper(queryClient),
     })
 
-    await result.current.mutateAsync({ email: 'user@example.com' })
+    await act(async () => {
+      await result.current.mutateAsync({ email: 'user@example.com' })
+    })
 
     expect(apiPostMock).toHaveBeenCalledWith('/auth/forgot-password', {
       email: 'user@example.com',
@@ -73,9 +75,11 @@ describe('useRequestPasswordReset', () => {
       wrapper: createWrapper(queryClient),
     })
 
-    await expect(
-      result.current.mutateAsync({ email: 'user@example.com' }),
-    ).rejects.toThrow('Email not found')
+    await act(async () => {
+      await expect(
+        result.current.mutateAsync({ email: 'user@example.com' }),
+      ).rejects.toThrow('Email not found')
+    })
 
     await waitFor(() => {
       expect(toastErrorMock).toHaveBeenCalledWith('Email not found', {
@@ -91,9 +95,11 @@ describe('useRequestPasswordReset', () => {
       wrapper: createWrapper(queryClient),
     })
 
-    await expect(
-      result.current.mutateAsync({ email: 'user@example.com' }),
-    ).rejects.toThrow('Could not request password reset')
+    await act(async () => {
+      await expect(
+        result.current.mutateAsync({ email: 'user@example.com' }),
+      ).rejects.toThrow('Could not request password reset')
+    })
   })
 
   it('rejects and shows an error toast for an invalid email without calling the API', async () => {
@@ -101,9 +107,11 @@ describe('useRequestPasswordReset', () => {
       wrapper: createWrapper(queryClient),
     })
 
-    await expect(
-      result.current.mutateAsync({ email: 'not-an-email' }),
-    ).rejects.toThrow()
+    await act(async () => {
+      await expect(
+        result.current.mutateAsync({ email: 'not-an-email' }),
+      ).rejects.toThrow()
+    })
 
     expect(apiPostMock).not.toHaveBeenCalled()
 
@@ -136,10 +144,12 @@ describe('useResetPassword', () => {
       wrapper: createWrapper(queryClient),
     })
 
-    await result.current.mutateAsync({
-      token: 'reset-token',
-      password: 'password123',
-      confirmPassword: 'password123',
+    await act(async () => {
+      await result.current.mutateAsync({
+        token: 'reset-token',
+        password: 'password123',
+        confirmPassword: 'password123',
+      })
     })
 
     expect(apiPostMock).toHaveBeenCalledWith('/auth/reset-password', {
@@ -165,13 +175,15 @@ describe('useResetPassword', () => {
       wrapper: createWrapper(queryClient),
     })
 
-    await expect(
-      result.current.mutateAsync({
-        token: 'bad-token',
-        password: 'password123',
-        confirmPassword: 'password123',
-      }),
-    ).rejects.toThrow('Invalid or expired reset link')
+    await act(async () => {
+      await expect(
+        result.current.mutateAsync({
+          token: 'bad-token',
+          password: 'password123',
+          confirmPassword: 'password123',
+        }),
+      ).rejects.toThrow('Invalid or expired reset link')
+    })
 
     expect(navigateMock).not.toHaveBeenCalled()
   })
@@ -181,13 +193,15 @@ describe('useResetPassword', () => {
       wrapper: createWrapper(queryClient),
     })
 
-    await expect(
-      result.current.mutateAsync({
-        token: 'reset-token',
-        password: 'password123',
-        confirmPassword: 'different123',
-      }),
-    ).rejects.toThrow()
+    await act(async () => {
+      await expect(
+        result.current.mutateAsync({
+          token: 'reset-token',
+          password: 'password123',
+          confirmPassword: 'different123',
+        }),
+      ).rejects.toThrow()
+    })
 
     expect(apiPostMock).not.toHaveBeenCalled()
     expect(navigateMock).not.toHaveBeenCalled()

@@ -57,12 +57,17 @@ describe('resetPasswordSchema', () => {
   })
 
   it('rejects passwords shorter than 8 characters', () => {
-    const result = resetPasswordSchema.safeParse({
-      password: 'short',
-      confirmPassword: 'short',
+    const sevenChar = resetPasswordSchema.safeParse({
+      password: 'seven77',
+      confirmPassword: 'seven77',
     })
+    expect(sevenChar.success).toBe(false)
 
-    expect(result.success).toBe(false)
+    const eightChar = resetPasswordSchema.safeParse({
+      password: 'eightch8',
+      confirmPassword: 'eightch8',
+    })
+    expect(eightChar.success).toBe(true)
   })
 
   it('rejects when confirmPassword is missing', () => {

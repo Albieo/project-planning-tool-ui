@@ -82,11 +82,13 @@ describe('useUpdateProfile', () => {
       avatar,
     })
 
+    const formDataArg = apiPostMock.mock.calls[0][1] as FormData
     expect(apiPostMock).toHaveBeenCalledWith(
       '/auth/upload-profile-photo',
       expect.any(FormData),
       { headers: { 'Content-Type': 'multipart/form-data' } },
     )
+    expect(formDataArg.get('file')).toBe(avatar)
     expect(profile).toEqual({
       ...baseProfile,
       profilePhotoUrl: 'http://backend/uploads/avatar.png',

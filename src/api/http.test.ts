@@ -52,16 +52,16 @@ describe('resolveBackendUrl', () => {
 
   it('resolves a relative path against the configured backend url', () => {
     const result = resolveBackendUrl('/uploads/avatar.png')
+    const expected = new URL('/uploads/avatar.png', BACKEND_URL).toString()
 
-    expect(result).toBeDefined()
-    expect(new URL(result as string).pathname).toBe('/uploads/avatar.png')
+    expect(result).toBe(expected)
   })
 
   it('resolves a relative path without a leading slash', () => {
     const result = resolveBackendUrl('uploads/avatar.png')
+    const expected = new URL('uploads/avatar.png', BACKEND_URL).toString()
 
-    expect(result).toBeDefined()
-    expect(new URL(result as string).pathname).toBe('/uploads/avatar.png')
+    expect(result).toBe(expected)
   })
 
   it('returns undefined when URL construction throws', () => {

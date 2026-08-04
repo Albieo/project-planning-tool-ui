@@ -5,7 +5,9 @@ const apiGetMock = vi.fn()
 
 vi.mock('@tanstack/react-start', () => ({
   createServerFn: () => ({
-    handler: (fn: (...args: Array<unknown>) => unknown) => fn,
+    handler: (fn: (...args: Array<unknown>) => unknown) => () => {
+      return fn()
+    },
   }),
 }))
 

@@ -26,10 +26,6 @@ vi.mock('./AvatarDropdown', () => ({
   AvatarDropdown: () => <div data-testid="avatar-dropdown" />,
 }))
 
-vi.mock('./ui/logo', () => ({
-  Logo: () => <div data-testid="logo" />,
-}))
-
 afterEach(() => {
   cleanup()
   vi.clearAllMocks()
@@ -41,9 +37,9 @@ describe('Header', () => {
 
     render(<Header />)
 
-    const logo = screen.getByTestId('logo')
-    expect(logo).not.toBeNull()
-    expect(logo.closest('a')?.getAttribute('href')).toBe('/')
+    const brandLink = screen.getByRole('link', { name: /PlanMesh/i })
+    expect(brandLink).not.toBeNull()
+    expect(brandLink.getAttribute('href')).toBe('/')
   })
 
   it('shows Login and Get Started links when unauthenticated', () => {

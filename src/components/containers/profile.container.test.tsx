@@ -29,6 +29,7 @@ vi.mock('#/components/profile/ProfileForm', () => ({
     return (
       <div data-testid="profile-form">
         <span data-testid="loading">{String(props.isLoading)}</span>
+        <span data-testid="profile">{JSON.stringify(props.profile)}</span>
       </div>
     )
   },
@@ -71,6 +72,7 @@ describe('ProfileContainer', () => {
 
     expect(screen.getByTestId('profile-form')).not.toBeNull()
     expect(screen.getByTestId('loading').textContent).toBe('true')
+    expect(screen.getByTestId('profile').textContent).toBe(JSON.stringify(profile))
   })
 
   it('calls mutateAsync with the submitted data', async () => {
@@ -82,6 +84,8 @@ describe('ProfileContainer', () => {
     mutateAsyncMock.mockResolvedValue(undefined)
 
     render(<ProfileContainer />)
+
+    expect(screen.getByTestId('profile').textContent).toBe(JSON.stringify(profile))
 
     const payload: UpdateProfilePayload = {
       name: 'Updated Name',
@@ -104,6 +108,8 @@ describe('ProfileContainer', () => {
 
     render(<ProfileContainer />)
 
+    expect(screen.getByTestId('profile').textContent).toBe(JSON.stringify(profile))
+
     const payload: UpdateProfilePayload = {
       name: 'Updated Name',
       username: 'updated',
@@ -112,5 +118,6 @@ describe('ProfileContainer', () => {
     }
 
     await expect(capturedOnSubmit?.(payload)).resolves.toBeUndefined()
+    expect(mutateAsyncMock).toHaveBeenCalledWith(payload)
   })
 })
