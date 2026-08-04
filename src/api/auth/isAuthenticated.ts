@@ -1,12 +1,13 @@
 import { createServerFn } from '@tanstack/react-start'
+import { getRequest } from '@tanstack/react-start/server'
 import { api } from '#/api/http'
 
 const isAuthenticatedServer = createServerFn({
   method: 'GET',
-}).handler(async (ctx) => {
+}).handler(async () => {
   try {
-    const { request } = ctx as { request?: Request }
-    const cookieHeader = request?.headers?.get?.('cookie') ?? null
+    const request = getRequest()
+    const cookieHeader = request.headers.get('cookie')
 
     if (!cookieHeader) {
       return { authenticated: false }

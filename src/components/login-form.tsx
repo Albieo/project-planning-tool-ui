@@ -16,6 +16,13 @@ type LoginFormProps = {
   error?: string
 }
 
+/**
+ * Renders a login form and submits validated credentials.
+ *
+ * @param onSubmit - Callback invoked with the submitted email and password
+ * @param error - Error message displayed below the submit button
+ * @param isLoading - Whether the form is currently submitting
+ */
 export function LoginForm({
   onSubmit,
   error,
@@ -73,12 +80,12 @@ export function LoginForm({
                     placeholder="••••••••"
                     autoComplete="current-password"
                     forgotPassword={
-                      <a
-                        href="#"
+                      <Link
+                        to="/reset-password"
                         className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
                       >
                         Forgot your password?
-                      </a>
+                      </Link>
                     }
                   />
                 )}

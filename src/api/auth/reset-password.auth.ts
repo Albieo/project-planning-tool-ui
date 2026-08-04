@@ -1,0 +1,88 @@
+import { useMutation } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
+import { toast } from 'sonner'
+import { api } from '#/api/http'
+import { forgotPasswordSchema, resetPasswordSchema } from '#/schemas/auth'
+
+/**
+ * Requests a password-reset email for the specified address.
+ *
+ * @param data - The email address to send the password-reset instructions to
+ * @throws Error if the request does not receive a 202 response
+ */
+async function requestPasswordReset(data: { email: string }) {
+  const parsed = forgotPasswordSchema.parse(data)
+  const res = await api.post('/auth/forgot-password', parsed)
+
+  if (res.status !== 202) {
+    throw new Error(res.data?.message || 'Could not request password reset')
+  }
+}
+
+/**
+ * Completes a password reset using a valid reset token and matching password fields.
+ *
+ * @param data - The reset token, new password, and password confirmation
+ * @throws Error if the reset request is rejected or the reset link is invalid or expired
+ */
+async function resetPassword(data: {
+  token: string
+  password: string
+  confirmPassword: string
+}) {
+  const parsed = resetPasswordSchema.parse(data)
+  const res = await api.post('/auth/reset-password', {
+    token: data.token,
+    password: parsed.password,
+  })
+
+  if (res.status !== 200) {
+    throw new Error(res.data?.message || 'Invalid or expired reset link')
+  }
+}
+
+/**
+ * Provides a mutation for requesting a password reset email.
+ */
+export function useRequestPasswordReset() {
+  return useMutation({
+    mutationFn: requestPasswordReset,
+    onSuccess: () => {
+      toast.success('Password reset email sent', {
+        position: 'bottom-right',
+      })
+    },
+    onError: (error) => {
+      toast.error(error.message, {
+        position: 'bottom-right',
+      })
+    },
+  })
+}
+
+/**
+ * Provides a mutation for resetting a user's password.
+ *
+ * On success, displays a confirmation notification and redirects to the login page. On failure, displays the error message.
+ *
+ * @returns The password-reset mutation state and controls
+ */
+export function useResetPassword() {
+  const navigate = useNavigate()
+
+  return useMutation({
+    mutationFn: resetPassword,
+    onSuccess: () => {
+      toast.success('Password reset successful', {
+        position: 'bottom-right',
+      })
+
+      navigate({ to: '/login', replace: true })
+    },
+    onError: (error) => {
+      toast.error(error.message, {
+        position: 'bottom-right',
+      })
+    },
+  })
+}
