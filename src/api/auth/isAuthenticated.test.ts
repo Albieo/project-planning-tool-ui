@@ -3,13 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 const getRequestMock = vi.fn()
 const apiGetMock = vi.fn()
 
-vi.mock('@tanstack/react-start', () => ({
-  createServerFn: () => ({
-    handler: (fn: (...args: Array<unknown>) => unknown) => () => {
-      return fn()
-    },
-  }),
-}))
+// Use the real @tanstack/react-start implementation in tests
 
 vi.mock('@tanstack/react-start/server', () => ({
   getRequest: getRequestMock,

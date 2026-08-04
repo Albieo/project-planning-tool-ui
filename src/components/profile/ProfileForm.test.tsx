@@ -21,14 +21,28 @@ vi.mock('#/api/auth/delete-profile.auth', () => ({
   }),
 }))
 
-vi.mock('@/components/ui/avatar', () => ({
-  Avatar: ({ children }: { children: ReactNode }) => <div>{children}</div>,
-  AvatarImage: ({ src }: { src?: string }) =>
-    src ? <img data-testid="avatar-image" src={src} alt="Profile" /> : null,
-  AvatarFallback: ({ children }: { children: ReactNode }) => (
-    <div data-testid="avatar-fallback">{children}</div>
-  ),
-}))
+vi.mock('@/components/ui/avatar', () => {
+  const React = require('react')
+
+  return {
+    Avatar: ({ children }: { children: React.ReactNode }) =>
+      React.createElement('div', { 'data-testid': 'mock-avatar' }, children),
+    AvatarImage: ({ src }: { src?: string }) =>
+      src
+        ? React.createElement('img', {
+            'data-testid': 'avatar-image',
+            src,
+            alt: 'Profile',
+          })
+        : null,
+    AvatarFallback: ({ children }: { children: React.ReactNode }) =>
+      React.createElement(
+        'div',
+        { 'data-testid': 'avatar-fallback' },
+        children,
+      ),
+  }
+})
 
 const baseProfile: ProfileResponse = {
   name: 'Jane Doe',

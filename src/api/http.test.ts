@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { resolveBackendUrl } from '#/api/http'
+import { resolveBackendUrl, BACKEND_URL } from '#/api/http'
 
 describe('resolveBackendUrl', () => {
   afterEach(() => {

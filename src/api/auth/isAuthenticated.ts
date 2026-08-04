@@ -1,10 +1,7 @@
-import { createServerFn } from '@tanstack/react-start'
 import { getRequest } from '@tanstack/react-start/server'
 import { api } from '#/api/http'
 
-const isAuthenticatedServer = createServerFn({
-  method: 'GET',
-}).handler(async () => {
+async function getAuthStateServerRequest() {
   try {
     const request = getRequest()
     const cookieHeader = request.headers.get('cookie')
@@ -24,9 +21,9 @@ const isAuthenticatedServer = createServerFn({
   } catch {
     return { authenticated: false }
   }
-})
+}
 
-async function getClientAuthState() {
+async function getAuthStateClientRequest() {
   try {
     const res = await api.get('/auth/validate', {
       headers: {
@@ -47,8 +44,8 @@ export const authQuery = () => ({
   queryKey: ['auth'],
   queryFn: () =>
     typeof window === 'undefined'
-      ? isAuthenticatedServer()
-      : getClientAuthState(),
+      ? getAuthStateServerRequest()
+      : getAuthStateClientRequest(),
   staleTime: 30 * 1000,
   gcTime: 5 * 60 * 1000,
   refetchOnMount: false,

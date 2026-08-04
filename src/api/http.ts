@@ -36,10 +36,11 @@ export function resolveBackendUrl(path?: string | null) {
 let logoutPromise: Promise<void> | null = null
 
 /**
- * Initiates a single-flight logout request that clears server-side credentials.
- * Reuses any in-flight logout request to avoid duplicates.
- * Login/authentication flows should await this to ensure logout cleanup completes
- * before establishing a new session.
+ * Ensures only one logout request is in flight at a time.
+ * Concurrent callers receive the same promise.
+ *
+ * This is useful when multiple authentication flows may trigger
+ * a logout simultaneously (e.g. expired tokens or session cleanup).
  */
 export function ensureLoggedOut(): Promise<void> {
   if (logoutPromise) {
@@ -48,15 +49,10 @@ export function ensureLoggedOut(): Promise<void> {
 
   logoutPromise = api
     .post('/auth/logout')
-    .catch(() => {
-      // Ignore errors - we're just trying to clean up credentials
-    })
+    .then(() => undefined)
+    .catch(() => undefined)
     .finally(() => {
-      // Clear the promise after a short delay to allow immediate reuse
-      // but eventually reset for future logout scenarios
-      setTimeout(() => {
-        logoutPromise = null
-      }, 100)
+      logoutPromise = null
     })
 
   return logoutPromise
