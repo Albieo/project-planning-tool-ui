@@ -4,6 +4,11 @@ import {
 } from '#/api/auth/reset-password.auth'
 import { ResetPasswordForm } from '#/components/reset-password-form'
 
+/**
+ * Renders the password reset form with the appropriate mutation state and handlers.
+ *
+ * @param token - Optional token used to complete a password reset.
+ */
 export function ResetPasswordContainer({
   token,
 }: Readonly<{ token?: string }>) {

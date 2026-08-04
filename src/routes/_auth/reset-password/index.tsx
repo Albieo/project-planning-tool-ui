@@ -7,6 +7,9 @@ export const Route = createFileRoute('/_auth/reset-password/')({
   component: ResetPassword,
 })
 
+/**
+ * Renders the password reset form using the token from the route search parameters.
+ */
 function ResetPassword() {
   const { token } = Route.useSearch()
 

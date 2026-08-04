@@ -24,6 +24,14 @@ type ProfileFormProps = {
   isLoading?: boolean
 }
 
+/**
+ * Renders a profile form for viewing, editing, and deleting account information.
+ *
+ * @param profile - The profile data displayed and used to initialize the form.
+ * @param onSubmit - Handles submitted profile updates.
+ * @param isLoading - Whether a profile update is in progress.
+ * @returns The profile management form.
+ */
 export function ProfileForm({
   profile,
   onSubmit,

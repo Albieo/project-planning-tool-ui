@@ -4,6 +4,9 @@ import { useAuth } from '#/hooks/useAuth'
 import { AvatarDropdown } from './AvatarDropdown'
 import { Logo } from './ui/logo'
 
+/**
+ * Renders the application's sticky navigation header with route links, authentication controls, and a theme toggle.
+ */
 export default function Header() {
   const { data, isLoading } = useAuth()
 

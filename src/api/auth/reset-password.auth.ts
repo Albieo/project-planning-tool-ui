@@ -4,6 +4,12 @@ import { toast } from 'sonner'
 import { api } from '#/api/http'
 import { forgotPasswordSchema, resetPasswordSchema } from '#/schemas/auth'
 
+/**
+ * Requests a password-reset email for the specified address.
+ *
+ * @param data - The email address to send the password-reset instructions to
+ * @throws Error if the request does not receive a 202 response
+ */
 async function requestPasswordReset(data: { email: string }) {
   const parsed = forgotPasswordSchema.parse(data)
   const res = await api.post('/auth/forgot-password', parsed)
@@ -13,6 +19,12 @@ async function requestPasswordReset(data: { email: string }) {
   }
 }
 
+/**
+ * Completes a password reset using a valid reset token and matching password fields.
+ *
+ * @param data - The reset token, new password, and password confirmation
+ * @throws Error if the reset request is rejected or the reset link is invalid or expired
+ */
 async function resetPassword(data: {
   token: string
   password: string
@@ -29,6 +41,9 @@ async function resetPassword(data: {
   }
 }
 
+/**
+ * Provides a mutation for requesting a password reset email.
+ */
 export function useRequestPasswordReset() {
   return useMutation({
     mutationFn: requestPasswordReset,
@@ -45,6 +60,13 @@ export function useRequestPasswordReset() {
   })
 }
 
+/**
+ * Provides a mutation for resetting a user's password.
+ *
+ * On success, displays a confirmation notification and redirects to the login page. On failure, displays the error message.
+ *
+ * @returns The password-reset mutation state and controls
+ */
 export function useResetPassword() {
   const navigate = useNavigate()
 

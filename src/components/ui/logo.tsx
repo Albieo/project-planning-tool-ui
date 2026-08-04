@@ -5,6 +5,13 @@ type LogoProps = {
   className?: string
 }
 
+/**
+ * Renders the PlanMesh logo with an optional wordmark and custom styling.
+ *
+ * @param showText - Whether to display the “PlanMesh” wordmark
+ * @param className - Additional classes applied to the logo container
+ * @returns The rendered logo component
+ */
 export function Logo({ showText = true, className = '' }: LogoProps) {
   const shouldReduceMotion = useReducedMotion()
 

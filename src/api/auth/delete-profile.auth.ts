@@ -3,6 +3,12 @@ import { useNavigate, useRouter } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import { api } from '#/api/http'
 
+/**
+ * Deletes the authenticated user's profile.
+ *
+ * @returns The response data.
+ * @throws An error if the request returns an HTTP status of 400 or higher.
+ */
 async function deleteProfileRequest() {
   const res = await api.delete('/auth/profile', {
     withCredentials: true,

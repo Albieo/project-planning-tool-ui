@@ -16,6 +16,13 @@ type LoginFormProps = {
   error?: string
 }
 
+/**
+ * Renders a login form and submits validated credentials.
+ *
+ * @param onSubmit - Callback invoked with the submitted email and password
+ * @param error - Error message displayed below the submit button
+ * @param isLoading - Whether the form is currently submitting
+ */
 export function LoginForm({
   onSubmit,
   error,

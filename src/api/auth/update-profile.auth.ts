@@ -4,6 +4,13 @@ import { api } from '#/api/http'
 import type { ProfileResponse } from '#/lib/interfaces/profile-response.interface'
 import type { UpdateProfilePayload } from '#/lib/interfaces/update-profile-payload.interface'
 
+/**
+ * Updates the user's profile and optionally uploads a new profile photo.
+ *
+ * @param data - The profile fields and optional avatar to update
+ * @returns The updated profile
+ * @throws Error if the username is already taken or the profile or photo update fails
+ */
 async function updateProfileRequest(data: UpdateProfilePayload) {
   const profileRes = await api.patch<ProfileResponse>('/auth/profile', {
     name: data.name,

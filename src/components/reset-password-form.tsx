@@ -22,6 +22,15 @@ type ResetPasswordFormProps = {
   error?: string
 }
 
+/**
+ * Renders a form for requesting a password reset or setting a new password.
+ *
+ * @param token - The password-reset token used to complete a password reset.
+ * @param onRequestReset - Handles submissions requesting a password-reset link.
+ * @param onResetPassword - Handles submissions setting a new password.
+ * @param isLoading - Whether the current submission is in progress.
+ * @param error - An error message to display after a failed submission.
+ */
 export function ResetPasswordForm({
   token,
   onRequestReset,

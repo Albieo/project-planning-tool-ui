@@ -13,6 +13,12 @@ export const api = axios.create({
   validateStatus: () => true,
 })
 
+/**
+ * Resolves a resource path against the configured backend URL.
+ *
+ * @param path - The resource path or absolute URL to resolve
+ * @returns The resolved URL, the original `blob:`, `data:`, or HTTP(S) URL, or `undefined` for an empty, protocol-relative, or invalid path
+ */
 export function resolveBackendUrl(path?: string | null) {
   if (!path) return undefined
   if (/^(blob:|data:|https?:\/\/)/i.test(path)) return path

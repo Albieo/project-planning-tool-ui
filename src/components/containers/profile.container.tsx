@@ -3,6 +3,11 @@ import { useUpdateProfile } from '#/api/auth/update-profile.auth'
 import { ProfileForm } from '#/components/profile/ProfileForm'
 import type { UpdateProfilePayload } from '#/lib/interfaces/update-profile-payload.interface'
 
+/**
+ * Renders the profile form when the user's profile is available.
+ *
+ * @returns The profile form or `null` when the profile is unavailable.
+ */
 export function ProfileContainer() {
   const { data: profile } = useGetProfile()
   const mutation = useUpdateProfile()
