@@ -13,7 +13,7 @@ export function ProfileContainer() {
   const mutation = useUpdateProfile()
 
   const handleSubmit = async (data: UpdateProfilePayload) => {
-    await mutation.mutateAsync(data)
+    await mutation.mutateAsync(data).catch(() => {})
   }
 
   return profile ? (
