@@ -31,6 +31,37 @@ export function resolveBackendUrl(path?: string | null) {
   }
 }
 
+// Shared single-flight logout promise to prevent duplicate logout requests
+// and coordinate with login/authentication transitions
+let logoutPromise: Promise<void> | null = null
+
+/**
+ * Initiates a single-flight logout request that clears server-side credentials.
+ * Reuses any in-flight logout request to avoid duplicates.
+ * Login/authentication flows should await this to ensure logout cleanup completes
+ * before establishing a new session.
+ */
+export function ensureLoggedOut(): Promise<void> {
+  if (logoutPromise) {
+    return logoutPromise
+  }
+
+  logoutPromise = api
+    .post('/auth/logout')
+    .catch(() => {
+      // Ignore errors - we're just trying to clean up credentials
+    })
+    .finally(() => {
+      // Clear the promise after a short delay to allow immediate reuse
+      // but eventually reset for future logout scenarios
+      setTimeout(() => {
+        logoutPromise = null
+      }, 100)
+    })
+
+  return logoutPromise
+}
+
 // When the backend returns 401, attempt to clear server-side credentials by
 // calling the logout endpoint. Protect against recursion by skipping the
 // interceptor when the request is itself the logout call.
@@ -39,10 +70,21 @@ api.interceptors.response.use(
     // If unauthorized and it's not the logout request, try to clear credentials
     try {
       const reqUrl = response.config.url || ''
-      if (response.status === 401 && !/\/auth\/logout/.test(reqUrl)) {
-        // Fire-and-forget logout to clear HttpOnly cookies server-side.
-        // We ignore errors here to avoid breaking the original response flow.
-        void api.post('/auth/logout').catch(() => {})
+
+      // Normalize URL to check if this is the logout endpoint itself
+      let pathname = ''
+      try {
+        const url = new URL(reqUrl, BACKEND_URL)
+        pathname = url.pathname
+      } catch {
+        // If URL parsing fails, treat reqUrl as a pathname
+        pathname = reqUrl
+      }
+
+      // Only trigger logout if this is a 401 and NOT the logout endpoint itself
+      if (response.status === 401 && pathname !== '/auth/logout') {
+        // Use shared single-flight logout to avoid duplicate requests
+        void ensureLoggedOut()
       }
     } catch {
       // swallow any errors here

@@ -2,10 +2,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import { loginSchema } from '#/schemas/auth'
-import { api } from '#/api/http'
+import { api, ensureLoggedOut } from '#/api/http'
 import type { LoginPayload } from '#/lib/interfaces/login-payload.interface'
 
 async function loginRequest(data: LoginPayload) {
+  // Wait for any in-flight logout to complete before starting login
+  // This prevents a late logout from invalidating the new session
+  await ensureLoggedOut()
+
   const parsed = loginSchema.parse(data)
   const res = await api.post('/auth/login', parsed)
 
