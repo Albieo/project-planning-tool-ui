@@ -5,28 +5,28 @@ import { api } from '#/api/http'
 import type { ProfileResponse } from '#/lib/interfaces/profile-response.interface'
 
 async function getProfileServerRequest() {
-  const span = Sentry.startSpan({
-    op: 'server.auth.getProfile',
-    description: 'Server-side profile fetch',
-  })
+  return Sentry.startSpan(
+    {
+      name: 'server.auth.getProfile',
+      op: 'server.auth.getProfile',
+      description: 'Server-side profile fetch',
+    },
+    async () => {
+      const request = getRequest()
+      const cookieHeader = request.headers.get('cookie') ?? ''
 
-  try {
-    const request = getRequest()
-    const cookieHeader = request.headers.get('cookie') ?? ''
+      const res = await api.get<ProfileResponse>('/auth/profile', {
+        headers: cookieHeader ? { Cookie: cookieHeader } : undefined,
+        withCredentials: false,
+      })
 
-    const res = await api.get<ProfileResponse>('/auth/profile', {
-      headers: cookieHeader ? { Cookie: cookieHeader } : undefined,
-      withCredentials: false,
-    })
+      if (res.status >= 400) {
+        throw new Error('Failed to fetch profile')
+      }
 
-    if (res.status >= 400) {
-      throw new Error('Failed to fetch profile')
-    }
-
-    return res.data
-  } finally {
-    span.finish()
-  }
+      return res.data
+    },
+  )
 }
 
 async function getProfileClientRequest() {

@@ -47,6 +47,10 @@ export function getLogoutPromise(): Promise<void> {
 }
 
 export function ensureLoggedOut(): Promise<void> {
+  if (typeof window === 'undefined') {
+    return Promise.resolve()
+  }
+
   if (logoutPromise) {
     return logoutPromise
   }
@@ -83,8 +87,10 @@ api.interceptors.response.use(
 
       // Only trigger logout if this is a 401 and NOT the logout endpoint itself
       if (response.status === 401 && pathname !== '/auth/logout') {
-        // Use shared single-flight logout to avoid duplicate requests
-        void ensureLoggedOut()
+        // Use shared browser-only logout to avoid duplicate requests
+        if (typeof window !== 'undefined') {
+          void ensureLoggedOut()
+        }
       }
     } catch {
       // swallow any errors here
