@@ -14,8 +14,12 @@ export function ResetPasswordContainer({
   return (
     <ResetPasswordForm
       token={token}
-      onRequestReset={(data) => requestMutation.mutateAsync(data).catch(() => {})}
-      onResetPassword={(data) => resetMutation.mutateAsync(data).catch(() => {})}
+      onRequestReset={(data) =>
+        requestMutation.mutateAsync(data).catch(() => {})
+      }
+      onResetPassword={(data) =>
+        resetMutation.mutateAsync(data).catch(() => {})
+      }
       isLoading={activeMutation.isPending}
       error={activeMutation.error?.message}
     />
