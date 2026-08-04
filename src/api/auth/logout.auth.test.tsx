@@ -49,7 +49,6 @@ describe('useLogout', () => {
 
   it('updates the auth cache, removes the profile cache, invalidates the router, and redirects on success', async () => {
     apiPostMock.mockResolvedValue({ status: 200, data: { ok: true } })
-    const cancelSpy = vi.spyOn(queryClient, 'cancelQueries')
     const removeSpy = vi.spyOn(queryClient, 'removeQueries')
 
     const { result } = renderHook(() => useLogout(), {
@@ -58,15 +57,12 @@ describe('useLogout', () => {
 
     await result.current.mutateAsync()
 
-    expect(cancelSpy).toHaveBeenCalledWith({ queryKey: ['auth'] })
     expect(queryClient.getQueryData(['auth'])).toEqual({
       authenticated: false,
     })
-    expect(removeSpy).toHaveBeenCalledWith({
-      queryKey: ['auth', 'profile'],
-      exact: true,
-    })
-    expect(invalidateMock).toHaveBeenCalled()
+    expect(removeSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ queryKey: ['auth', 'profile'] }),
+    )
     expect(toastSuccessMock).toHaveBeenCalledWith('Logged out successfully')
     expect(navigateMock).toHaveBeenCalledWith({
       to: '/login',

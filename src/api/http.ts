@@ -22,7 +22,7 @@ export const api = axios.create({
 export function resolveBackendUrl(path?: string | null) {
   if (!path) return undefined
   if (/^(blob:|data:|https?:\/\/)/i.test(path)) return path
-  if (/^\/\//.test(path)) return undefined
+  if (path.startsWith('//')) return undefined
 
   try {
     return new URL(path, BACKEND_URL).toString()
@@ -30,3 +30,28 @@ export function resolveBackendUrl(path?: string | null) {
     return undefined
   }
 }
+
+// When the backend returns 401, attempt to clear server-side credentials by
+// calling the logout endpoint. Protect against recursion by skipping the
+// interceptor when the request is itself the logout call.
+api.interceptors.response.use(
+  (response) => {
+    // If unauthorized and it's not the logout request, try to clear credentials
+    try {
+      const reqUrl = response.config.url || ''
+      if (response.status === 401 && !/\/auth\/logout/.test(reqUrl)) {
+        // Fire-and-forget logout to clear HttpOnly cookies server-side.
+        // We ignore errors here to avoid breaking the original response flow.
+        void api.post('/auth/logout').catch(() => {})
+      }
+    } catch {
+      // swallow any errors here
+    }
+
+    return response
+  },
+  (error) => {
+    // Network or other errors - propagate as-is
+    return Promise.reject(error)
+  },
+)
